@@ -1,4 +1,4 @@
-package com.mango.task.ui.screens.authentication
+package com.mango.task.ui.screens.authentication.enterPhoneNumber
 
 
 import androidx.compose.foundation.Image
@@ -40,34 +40,34 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.mango.task.R
 import com.mango.task.ui.navigation.AppNavItems
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegistrationScreen(
+fun EnterPhoneNumber(
     navController: NavController,
-    registrationViewModel: RegistrationViewModel = viewModel()
+    enterPhoneNumberViewModel: EnterPhoneNumberViewModel = hiltViewModel()
 ) {
-    val state by registrationViewModel.state
+    val state by enterPhoneNumberViewModel.state
 
     val countryList = Country.countryList
     val placeholderCountry = Country.placeholderCountry
     var expanded by remember { mutableStateOf(false) }
 
-    LaunchedEffect(state.isRegistrationSuccessful) {
-        if (state.isRegistrationSuccessful) {
+    LaunchedEffect(state.isAuthCodeSend) {
+        if (state.isAuthCodeSend) {
             navController.navigate(AppNavItems.BottomNavNavigation.route) {
-                popUpTo(AppNavItems.Registration.route) { inclusive = true }
+                popUpTo(AppNavItems.EnterPhoneNumber.route) { inclusive = true }
             }
         }
     }
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(title = { Text(stringResource(R.string.registration_page_title)) })
+            CenterAlignedTopAppBar(title = { Text(stringResource(R.string.enter_phone_number_page_title)) })
         }) { paddingValues ->
         Column(
             modifier = Modifier
@@ -119,8 +119,8 @@ fun RegistrationScreen(
                                     Text("${country.code} (${stringResource(country.name)})")
                                 }
                             }, onClick = {
-                                registrationViewModel.processIntent(
-                                    intent = RegistrationIntent.CountryCodeChanged(countryCode = country.code)
+                                enterPhoneNumberViewModel.processIntent(
+                                    intent = EnterPhoneNumberIntent.CountryCodeChanged(countryCode = country.code)
                                 )
                                 expanded = false
                             })
@@ -131,8 +131,8 @@ fun RegistrationScreen(
                 OutlinedTextField(
                     value = state.countryCode,
                     onValueChange = {
-                        registrationViewModel.processIntent(
-                            intent = RegistrationIntent.CountryCodeChanged(
+                        enterPhoneNumberViewModel.processIntent(
+                            intent = EnterPhoneNumberIntent.CountryCodeChanged(
                                 countryCode = it
                             )
                         )
@@ -160,8 +160,8 @@ fun RegistrationScreen(
                         },
                     value = state.phoneNumber,
                     onValueChange = {
-                        registrationViewModel.processIntent(
-                            intent = RegistrationIntent.PhoneNumberChanged(
+                        enterPhoneNumberViewModel.processIntent(
+                            intent = EnterPhoneNumberIntent.PhoneNumberChanged(
                                 phoneNumber = it
                             )
                         )
@@ -187,7 +187,7 @@ fun RegistrationScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { registrationViewModel.processIntent(RegistrationIntent.Submit) },
+                onClick = { enterPhoneNumberViewModel.processIntent(EnterPhoneNumberIntent.Submit) },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = state.isPhoneValid && !state.isLoading
             ) {
@@ -201,7 +201,7 @@ fun RegistrationScreen(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                 } else {
-                    Text(stringResource(R.string.registration_button))
+                    Text(stringResource(R.string.submit_button_text))
                 }
             }
         }

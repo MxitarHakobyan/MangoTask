@@ -10,8 +10,8 @@ lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
 composeBom = "2024.11.00"
 navigation = "2.8.4"
+composeHilt = "1.2.0"
 retrofit2 = "2.11.0"
-gson = "2.11.0"
 okHttp3 = "4.12.0"
 androidxDatastore = "1.1.1"
 hilt = "2.51.1"
@@ -29,13 +29,14 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
+androidx-hilt = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "composeHilt" }
 androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayout-compose" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 retrofit2 = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit2" }
-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+gsonConverter = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit2" }
 loggingInterceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okHttp3" }
 datastorePreferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDatastore" }
 

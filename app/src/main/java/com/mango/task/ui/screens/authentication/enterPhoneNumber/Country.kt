@@ -1,4 +1,4 @@
-package com.mango.task.ui.screens.authentication
+package com.mango.task.ui.screens.authentication.enterPhoneNumber
 
 import com.mango.task.R
 

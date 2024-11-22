@@ -67,9 +67,10 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation)
+    implementation(libs.androidx.hilt)
 
     implementation(libs.retrofit2)
-    implementation(libs.gson)
+    implementation(libs.gsonConverter)
     implementation(libs.loggingInterceptor)
     implementation(libs.datastorePreferences)
     implementation(libs.hiltAndroid)

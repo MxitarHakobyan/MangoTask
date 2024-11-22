@@ -1,9 +1,9 @@
-package com.mango.task.ui.screens.authentication
+package com.mango.task.ui.screens.authentication.enterPhoneNumber
 
-data class RegistrationState(
+data class EnterPhoneNumberState(
     val isLoading: Boolean = false,
     val phoneNumber: String = "",
     val countryCode: String = "+7",
     val isPhoneValid: Boolean = true,
-    val isRegistrationSuccessful: Boolean = false
+    val isAuthCodeSend: Boolean = false
 )

@@ -5,6 +5,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.mango.task.ui.navigation.BottomNavItems
@@ -20,8 +21,8 @@ fun BottomNavigationBar(navController: NavController) {
     NavigationBar {
         items.forEach { item ->
             NavigationBarItem(
-                icon = { Icon(item.icon, contentDescription = item.title) },
-                label = { Text(item.title) },
+                icon = { Icon(item.icon, contentDescription = stringResource(item.title)) },
+                label = { Text(stringResource(item.title)) },
                 selected = currentRoute == item.route,
                 onClick = {
                     if (currentRoute != item.route) {

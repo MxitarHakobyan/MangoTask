@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">MangoTask</string>
+    <string name="bottom_nav_profile_title">Profile</string>
+    <string name="bottom_nav_home_title">Home</string>
+
+    <!--> Authentication screen <!-->
+    <string name="enter_your_phone_number_message">Enter your phone number</string>
+    <string name="registration_page_title">Register</string>
+    <string name="registration_button">Register</string>
+    <string name="country_code_input_title">Code</string>
+    <string name="phone_number_input_title">Phone Number</string>
+    <string name="phone_number_input_error_message">Please enter a valid phone number.</string>
+    <string name="country_name_armenia">Armenia</string>
+    <string name="country_name_russia">Russia</string>
+    <string name="country_name_unknown">Unknown</string>
+    <string name="country_name_georgia">Georgia</string>
 </resources>

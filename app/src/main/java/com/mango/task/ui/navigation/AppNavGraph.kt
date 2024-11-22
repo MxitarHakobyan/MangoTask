@@ -4,16 +4,16 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.mango.task.ui.screens.RegistrationScreen
+import com.mango.task.ui.screens.authentication.RegistrationScreen
 
 @Composable
 fun AppNavGraph() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = "registration"
+        startDestination = AppNavItems.Registration.route
     ) {
-        composable("registration") { RegistrationScreen(navController) }
-        composable("main") { BottomNavGraph() }
+        composable(route = AppNavItems.Registration.route) { RegistrationScreen(navController = navController) }
+        composable(route = AppNavItems.BottomNavNavigation.route) { BottomNavGraph() }
     }
 }

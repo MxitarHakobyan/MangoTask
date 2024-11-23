@@ -22,4 +22,12 @@
     <string name="enter_auth_code_message">Enter the authentication code sent via SMS</string>
     <string name="submit_auth_code_button_text">Submit</string>
 
+    <!--> Registration screen <!-->
+    <string name="registration_page_title">Registration</string>
+    <string name="username_input_error_message">Username can only contain letters, numbers, - and _</string>
+    <string name="username_input_title">Username</string>
+    <string name="phone_number_text_title">Phone Number</string>
+    <string name="full_name_input_title">Full Name</string>
+    <string name="registration_button_text">"Register"</string>
+
 </resources>

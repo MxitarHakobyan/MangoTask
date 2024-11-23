@@ -48,7 +48,11 @@ fun EnterAuthCodeScreen(
         viewModel.event.collect { event ->
             when (event) {
                 is EnterAuthCodeEvent.CodeSubmittedSuccessfully -> {
-                    navController.navigate(AppNavItems.BottomNavNavigation.route)
+                    navController.navigate("${AppNavItems.Registration.route}/${state.phoneNumber}") {
+                        popUpTo("${AppNavItems.EnterAuthCode.route}/${state.phoneNumber}") {
+                            inclusive = true
+                        }
+                    }
                 }
 
                 is EnterAuthCodeEvent.CodeSubmissionFailed -> {
@@ -65,20 +69,21 @@ fun EnterAuthCodeScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(paddingValues)
+                .padding(16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
+                modifier = Modifier.padding(bottom = 16.dp),
                 text = stringResource(R.string.enter_auth_code_message),
                 style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 16.dp)
+                textAlign = TextAlign.Center
             )
 
             OutlinedTextField(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(horizontal = 32.dp),
+                modifier = Modifier
+                    .fillMaxWidth(),
                 value = state.authCode,
                 onValueChange = { code ->
                     viewModel.handleIntent(AuthCodeIntent.EnterAuthCode(code))
@@ -100,16 +105,15 @@ fun EnterAuthCodeScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(horizontal = 32.dp),
+                modifier = Modifier.fillMaxWidth(),
                 onClick = { viewModel.handleIntent(AuthCodeIntent.SubmitCode) },
                 enabled = state.isCodeValid && !state.isLoading,
             ) {
                 if (state.isLoading) {
                     CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
                         color = MaterialTheme.colorScheme.onPrimary,
-                        strokeWidth = 2.dp,
-                        modifier = Modifier.size(24.dp)
+                        strokeWidth = 2.dp
                     )
                 } else {
                     Text(text = stringResource(R.string.submit_auth_code_button_text))
@@ -120,11 +124,11 @@ fun EnterAuthCodeScreen(
 
             state.errorMessage?.let {
                 Text(
+                    modifier = Modifier.fillMaxWidth(),
                     text = it,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    textAlign = TextAlign.Center
                 )
             }
         }

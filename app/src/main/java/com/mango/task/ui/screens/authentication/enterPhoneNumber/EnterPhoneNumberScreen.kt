@@ -29,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,9 +52,9 @@ import com.mango.task.ui.navigation.AppNavItems
 @Composable
 fun EnterPhoneNumber(
     navController: NavController,
-    enterPhoneNumberViewModel: EnterPhoneNumberViewModel = hiltViewModel()
+    viewModel: EnterPhoneNumberViewModel = hiltViewModel()
 ) {
-    val state by enterPhoneNumberViewModel.state
+    val state by viewModel.state.collectAsState()
     val context = LocalContext.current
 
     val countryList = Country.countryList
@@ -61,7 +62,7 @@ fun EnterPhoneNumber(
     var expanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        enterPhoneNumberViewModel.event.collect { event ->
+        viewModel.event.collect { event ->
             when (event) {
                 is EnterPhoneNumberEvent.PhoneNumberSubmittedSuccessfully -> {
                     navController.navigate(route = "${AppNavItems.EnterAuthCode.route}/${state.fullNumber()}")
@@ -120,15 +121,15 @@ fun EnterPhoneNumber(
                             DropdownMenuItem(text = {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Image(
+                                        modifier = Modifier.size(24.dp),
                                         painter = painterResource(id = country.flagRes),
-                                        contentDescription = stringResource(country.name),
-                                        modifier = Modifier.size(24.dp)
+                                        contentDescription = stringResource(country.name)
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text("${country.code} (${stringResource(country.name)})")
                                 }
                             }, onClick = {
-                                enterPhoneNumberViewModel.processIntent(
+                                viewModel.processIntent(
                                     intent = EnterPhoneNumberIntent.CountryCodeChanged(countryCode = country.code)
                                 )
                                 expanded = false
@@ -138,15 +139,6 @@ fun EnterPhoneNumber(
                 }
 
                 OutlinedTextField(
-                    value = state.countryCode,
-                    onValueChange = {
-                        enterPhoneNumberViewModel.processIntent(
-                            intent = EnterPhoneNumberIntent.CountryCodeChanged(
-                                countryCode = it
-                            )
-                        )
-                    },
-                    label = { Text(stringResource(R.string.country_code_input_title)) },
                     modifier = Modifier
                         .width(100.dp)
                         .height(64.dp)
@@ -154,7 +146,17 @@ fun EnterPhoneNumber(
                             start.linkTo(flagButton.end, 8.dp)
                             top.linkTo(flagButton.top)
                             bottom.linkTo(flagButton.bottom)
-                        })
+                        },
+                    value = state.countryCode,
+                    onValueChange = {
+                        viewModel.processIntent(
+                            intent = EnterPhoneNumberIntent.CountryCodeChanged(
+                                countryCode = it
+                            )
+                        )
+                    },
+                    label = { Text(stringResource(R.string.country_code_input_title)) },
+                )
 
                 OutlinedTextField(
                     modifier = Modifier
@@ -169,7 +171,7 @@ fun EnterPhoneNumber(
                         },
                     value = state.phoneNumber,
                     onValueChange = {
-                        enterPhoneNumberViewModel.processIntent(
+                        viewModel.processIntent(
                             intent = EnterPhoneNumberIntent.PhoneNumberChanged(
                                 phoneNumber = it
                             )
@@ -183,22 +185,22 @@ fun EnterPhoneNumber(
                 )
                 if (!state.isPhoneValid) {
                     Text(
-                        text = stringResource(R.string.phone_number_input_error_message),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.constrainAs(errorMessage) {
                             linkTo(start = phoneField.start, end = phoneField.end, bias = 0F)
                             top.linkTo(anchor = phoneField.bottom, margin = 4.dp)
-                        }
+                        },
+                        text = stringResource(R.string.phone_number_input_error_message),
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
                     )
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { enterPhoneNumberViewModel.processIntent(EnterPhoneNumberIntent.Submit) },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = state.isPhoneValid && !state.isLoading
+                onClick = { viewModel.processIntent(EnterPhoneNumberIntent.Submit) },
+                enabled = state.isPhoneValid && !state.isLoading,
             ) {
                 if (state.isLoading) {
                     CircularProgressIndicator(
@@ -206,7 +208,7 @@ fun EnterPhoneNumber(
                             .size(32.dp)
                             .padding(top = 4.dp, end = 8.dp),
                         color = MaterialTheme.colorScheme.onPrimary,
-                        strokeWidth = 2.dp
+                        strokeWidth = 2.dp,
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                 } else {

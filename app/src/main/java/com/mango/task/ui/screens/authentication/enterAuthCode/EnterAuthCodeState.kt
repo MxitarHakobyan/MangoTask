@@ -4,5 +4,6 @@ data class EnterAuthCodeState(
     val authCode: String = "",
     val isCodeValid: Boolean = false,
     val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val phoneNumber: String = "",
 )

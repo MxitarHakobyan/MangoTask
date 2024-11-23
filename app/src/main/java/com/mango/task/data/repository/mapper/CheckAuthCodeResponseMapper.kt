@@ -1,11 +1,11 @@
 package com.mango.task.data.repository.mapper
 
 import com.google.gson.Gson
-import com.mango.task.data.model.error.CheckAuthCodeErrorResponse
+import com.mango.task.data.model.error.ErrorResponse
 
 fun parseAuthCodeError(errorBody: String?): String {
     val errorResponse = errorBody?.let { errorJson ->
-        Gson().fromJson(errorJson, CheckAuthCodeErrorResponse::class.java)
+        Gson().fromJson(errorJson, ErrorResponse::class.java)
     }
     return errorResponse?.detail?.message ?: "Unknown error"
 }

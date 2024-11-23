@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.mango.task.ui.screens.authentication.enterAuthCode.EnterAuthCodeScreen
 import com.mango.task.ui.screens.authentication.enterPhoneNumber.EnterPhoneNumber
+import com.mango.task.ui.screens.authentication.registration.RegistrationScreen
 
 const val PHONE_NUMBER_KEY = "phoneNumber"
 
@@ -24,6 +25,11 @@ fun AppNavGraph() {
             route = "${AppNavItems.EnterAuthCode.route}/{${PHONE_NUMBER_KEY}}",
             arguments = listOf(navArgument(PHONE_NUMBER_KEY) { type = NavType.StringType }),
         ) { EnterAuthCodeScreen(navController = navController) }
+
+        composable(
+            route = "${AppNavItems.Registration.route}/{${PHONE_NUMBER_KEY}}",
+            arguments = listOf(navArgument(PHONE_NUMBER_KEY) { type = NavType.StringType }),
+        ) { RegistrationScreen(navController = navController) }
 
         composable(route = AppNavItems.BottomNavNavigation.route) { BottomNavGraph() }
     }

@@ -1,7 +1,5 @@
 package com.mango.task.ui.screens.authentication.enterPhoneNumber
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,7 +8,9 @@ import com.mango.task.data.model.request.SendAuthCodeRequest
 import com.mango.task.data.repository.UsersRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,7 +27,7 @@ class EnterPhoneNumberViewModel @Inject constructor(
         const val KEY_IS_LOADING = "is_loading"
     }
 
-    private val _state = mutableStateOf(
+    private val _state = MutableStateFlow(
         EnterPhoneNumberState(
             phoneNumber = savedStateHandle[KEY_PHONE_NUMBER] ?: "",
             countryCode = savedStateHandle[KEY_COUNTRY_CODE] ?: "+7",
@@ -35,7 +35,7 @@ class EnterPhoneNumberViewModel @Inject constructor(
             isLoading = savedStateHandle[KEY_IS_LOADING] ?: false,
         )
     )
-    val state: State<EnterPhoneNumberState> get() = _state
+    val state: StateFlow<EnterPhoneNumberState> get() = _state
 
     private fun updateState(newState: EnterPhoneNumberState) {
         _state.value = newState
@@ -70,8 +70,6 @@ class EnterPhoneNumberViewModel @Inject constructor(
     }
 
     private fun handleSubmit() {
-
-        // Validate phone number
         if (_state.value.phoneNumber.isEmpty() || !_state.value.isPhoneValid) {
             updateState(_state.value.copy(isPhoneValid = false))
             return

@@ -1,13 +1,16 @@
 package com.mango.task.data.repository
 
 import com.mango.task.data.base.Resources
+import com.mango.task.data.localStorage.prefs.SecureStorage
 import com.mango.task.data.model.request.CheckAuthCodeRequest
+import com.mango.task.data.model.request.RegistrationRequest
 import com.mango.task.data.model.request.SendAuthCodeRequest
 import com.mango.task.data.model.response.CheckAuthCodeResponse
+import com.mango.task.data.model.response.RegistrationResponse
 import com.mango.task.data.model.response.SendAuthCodeResponse
 import com.mango.task.data.network.UsersService
-import com.mango.task.data.repository.mapper.parseAuthCodeError
 import com.mango.task.data.repository.mapper.parseError
+import com.mango.task.data.repository.mapper.parseErrors
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
@@ -18,11 +21,13 @@ import javax.inject.Singleton
 interface UsersRepository {
     suspend fun sendAuthCode(sendAuthCodeRequest: SendAuthCodeRequest): Flow<Resources<SendAuthCodeResponse>>
     suspend fun checkAuthCode(checkAuthCodeRequest: CheckAuthCodeRequest): Flow<Resources<CheckAuthCodeResponse>>
+    suspend fun registration(registrationRequest: RegistrationRequest): Flow<Resources<RegistrationResponse>>
 }
 
 @Singleton
 class UsersRepositoryImpl @Inject constructor(
-    private val usersService: UsersService
+    private val usersService: UsersService,
+    private val secureStorage: SecureStorage,
 ) : UsersRepository {
 
     override suspend fun sendAuthCode(
@@ -37,7 +42,7 @@ class UsersRepositoryImpl @Inject constructor(
                     Resources.Success(response.body())
                 } else {
                     when (response.code()) {
-                        422 -> Resources.Error(message = parseError(response.errorBody()?.string()))
+                        422 -> Resources.Error(message = parseErrors(response.errorBody()?.string()))
                         else -> Resources.Error(message = "Unknown error")
                     }
                 }
@@ -68,9 +73,44 @@ class UsersRepositoryImpl @Inject constructor(
                     Resources.Success(response.body())
                 } else {
                     when (response.code()) {
-                        422 -> Resources.Error(message = parseError(response.errorBody()?.string()))
+                        422 -> Resources.Error(message = parseErrors(response.errorBody()?.string()))
                         404 -> Resources.Error(
-                            message = parseAuthCodeError(
+                            message = parseError(
+                                response.errorBody()?.string()
+                            )
+                        )
+
+                        else -> Resources.Error(message = "Unknown error")
+                    }
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+                Resources.Error(message = "Network error: ${e.message}")
+
+            } catch (e: HttpException) {
+                e.printStackTrace()
+                Resources.Error(message = "Network error: ${e.message}")
+            }
+
+            emit(Resources.Loading(isLoading = false))
+            emit(result)
+        }
+    }
+
+    override suspend fun registration(registrationRequest: RegistrationRequest): Flow<Resources<RegistrationResponse>> {
+        return flow {
+            emit(Resources.Loading(isLoading = true))
+
+            val result = try {
+                val response =
+                    usersService.registration(registrationRequest = registrationRequest)
+                if (response.isSuccessful && response.code() == 201) {
+                    Resources.Success(response.body())
+                } else {
+                    when (response.code()) {
+                        422 -> Resources.Error(message = parseErrors(response.errorBody()?.string()))
+                        400 -> Resources.Error(
+                            message = parseError(
                                 response.errorBody()?.string()
                             )
                         )

@@ -47,6 +47,7 @@ fun EnterAuthCodeScreen(
     LaunchedEffect(Unit) {
         viewModel.event.collect { event ->
             when (event) {
+                // Todo
                 is EnterAuthCodeEvent.CodeSubmittedSuccessfully -> {
                     navController.navigate("${AppNavItems.Registration.route}/${state.phoneNumber}") {
                         popUpTo("${AppNavItems.EnterAuthCode.route}/${state.phoneNumber}") {

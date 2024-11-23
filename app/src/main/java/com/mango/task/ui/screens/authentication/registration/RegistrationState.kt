@@ -7,5 +7,4 @@ data class RegistrationState(
     val isUsernameValid: Boolean = true,
     val isRegisterEnabled: Boolean = false,
     val isLoading: Boolean = false,
-    val errorMessage: String? = null,
 )

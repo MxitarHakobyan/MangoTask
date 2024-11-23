@@ -17,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class EnterPhoneNumberViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val usersRepository: UsersRepository
+    private val usersRepository: UsersRepository,
 ) : ViewModel() {
 
     private companion object {

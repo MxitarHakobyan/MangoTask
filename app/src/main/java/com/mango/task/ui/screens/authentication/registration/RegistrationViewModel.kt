@@ -2,17 +2,25 @@ package com.mango.task.ui.screens.authentication.registration
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.mango.task.data.base.Resources
+import com.mango.task.data.model.request.RegistrationRequest
+import com.mango.task.data.repository.UsersRepository
 import com.mango.task.ui.navigation.PHONE_NUMBER_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class RegistrationViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val usersRepository: UsersRepository
 ) : ViewModel() {
 
     companion object {
@@ -20,6 +28,7 @@ class RegistrationViewModel @Inject constructor(
         private const val KEY_FULL_NAME = "fullName"
         private const val KEY_USERNAME = "username"
         private const val KEY_IS_USERNAME_VALID = "isUsernameValid"
+        private const val KEY_IS_LOADING = "is_loading"
     }
 
     private val _state = MutableStateFlow(
@@ -27,10 +36,15 @@ class RegistrationViewModel @Inject constructor(
             phoneNumber = savedStateHandle[KEY_PHONE_NUMBER] ?: "",
             fullName = savedStateHandle[KEY_FULL_NAME] ?: "",
             username = savedStateHandle[KEY_USERNAME] ?: "",
-            isUsernameValid = savedStateHandle[KEY_IS_USERNAME_VALID] ?: true
+            isUsernameValid = savedStateHandle[KEY_IS_USERNAME_VALID] ?: true,
+            isLoading = savedStateHandle[KEY_IS_LOADING] ?: false,
         )
     )
     val state: StateFlow<RegistrationState> = _state.asStateFlow()
+
+
+    private val _event = MutableSharedFlow<RegistrationEvent>()
+    val event: SharedFlow<RegistrationEvent> = _event
 
     private val usernameRegex = Regex("^[A-Za-z0-9_-]+$")
 
@@ -78,11 +92,38 @@ class RegistrationViewModel @Inject constructor(
     }
 
     private fun registerUser() {
-        val currentState = _state.value
-        if (currentState.isRegisterEnabled) {
-            updateState { it.copy(errorMessage = null) }
-        } else {
-            updateState { it.copy(errorMessage = "Registration failed. Please check the inputs.") }
+        updateState { it.copy(isLoading = true) }
+        savedStateHandle[KEY_IS_LOADING] = true
+
+        viewModelScope.launch {
+            usersRepository.registration(
+                RegistrationRequest(
+                    phone = _state.value.phoneNumber,
+                    name = _state.value.fullName,
+                    username = _state.value.username,
+                )
+            ).collect { result ->
+                when (result) {
+                    is Resources.Loading -> {
+                        updateState { it.copy(isLoading = true) }
+                        savedStateHandle[KEY_IS_LOADING] = true
+                    }
+
+                    is Resources.Success -> {
+                        _event.emit(RegistrationEvent.UserCreated)
+                    }
+
+                    is Resources.Error -> {
+                        updateState { it.copy(isLoading = false) }
+                        savedStateHandle[KEY_IS_LOADING] = false
+                        _event.emit(
+                            RegistrationEvent.FailedToCreateUser(
+                                error = result.message ?: "Unknown Error"
+                            )
+                        )
+                    }
+                }
+            }
         }
     }
 

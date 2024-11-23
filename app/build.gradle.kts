@@ -73,6 +73,8 @@ dependencies {
     implementation(libs.gsonConverter)
     implementation(libs.loggingInterceptor)
     implementation(libs.datastorePreferences)
+    implementation(libs.datastorePreferencesCore)
+    implementation(libs.securityCrypto)
     implementation(libs.hiltAndroid)
     kapt(libs.hiltCompiler)
 

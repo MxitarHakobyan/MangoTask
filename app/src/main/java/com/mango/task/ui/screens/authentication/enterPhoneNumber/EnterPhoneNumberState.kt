@@ -5,4 +5,6 @@ data class EnterPhoneNumberState(
     val phoneNumber: String = "",
     val countryCode: String = "+7",
     val isPhoneValid: Boolean = true,
-)
+) {
+    fun fullNumber() = "$countryCode$phoneNumber"
+}

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.mango.task.data.base.Resources
 import com.mango.task.data.model.request.CheckAuthCodeRequest
 import com.mango.task.data.repository.UsersRepository
+import com.mango.task.ui.navigation.PHONE_NUMBER_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,6 +26,8 @@ class AuthCodeViewModel @Inject constructor(
         private const val KEY_IS_LOADING = "is_loading"
         private const val KEY_ERROR_MESSAGE = "error_message"
     }
+
+    private val phoneNumber: String = checkNotNull(savedStateHandle[PHONE_NUMBER_KEY])
 
     private val _state = MutableStateFlow(
         EnterAuthCodeState(
@@ -66,7 +69,7 @@ class AuthCodeViewModel @Inject constructor(
 
             repository.checkAuthCode(
                 checkAuthCodeRequest = CheckAuthCodeRequest(
-                    phone = "",
+                    phone = phoneNumber,
                     code = _state.value.authCode
                 )
             ).collect { result ->
@@ -83,7 +86,7 @@ class AuthCodeViewModel @Inject constructor(
                     is Resources.Error -> {
                         _state.value = _state.value.copy(isLoading = false)
                         savedStateHandle[KEY_IS_LOADING] = false
-                        _event.emit(EnterAuthCodeEvent.CodeSubmissionFailed("Invalid code. Please try again."))
+                        _event.emit(EnterAuthCodeEvent.CodeSubmissionFailed(error = result.message ?: "Unknown Error"))
                     }
                 }
             }

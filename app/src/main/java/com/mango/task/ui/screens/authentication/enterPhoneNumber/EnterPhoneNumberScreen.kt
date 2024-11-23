@@ -64,7 +64,7 @@ fun EnterPhoneNumber(
         enterPhoneNumberViewModel.event.collect { event ->
             when (event) {
                 is EnterPhoneNumberEvent.PhoneNumberSubmittedSuccessfully -> {
-                    navController.navigate(AppNavItems.EnterAuthCode.route)
+                    navController.navigate(route = "${AppNavItems.EnterAuthCode.route}/${state.fullNumber()}")
                 }
 
                 is EnterPhoneNumberEvent.PhoneNumberSubmissionFailed -> {

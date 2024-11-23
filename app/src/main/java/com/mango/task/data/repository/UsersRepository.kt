@@ -6,6 +6,8 @@ import com.mango.task.data.model.request.SendAuthCodeRequest
 import com.mango.task.data.model.response.CheckAuthCodeResponse
 import com.mango.task.data.model.response.SendAuthCodeResponse
 import com.mango.task.data.network.UsersService
+import com.mango.task.data.repository.mapper.parseAuthCodeError
+import com.mango.task.data.repository.mapper.parseError
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
@@ -22,32 +24,34 @@ interface UsersRepository {
 class UsersRepositoryImpl @Inject constructor(
     private val usersService: UsersService
 ) : UsersRepository {
+
     override suspend fun sendAuthCode(
         sendAuthCodeRequest: SendAuthCodeRequest
     ): Flow<Resources<SendAuthCodeResponse>> {
         return flow {
             emit(Resources.Loading(isLoading = true))
 
-            val isSuccess = try {
-                usersService.sendAuthCode(sendAuthCodeRequest = sendAuthCodeRequest)
+            val result = try {
+                val response = usersService.sendAuthCode(sendAuthCodeRequest = sendAuthCodeRequest)
+                if (response.isSuccessful && response.code() == 201) {
+                    Resources.Success(response.body())
+                } else {
+                    when (response.code()) {
+                        422 -> Resources.Error(message = parseError(response.errorBody()?.string()))
+                        else -> Resources.Error(message = "Unknown error")
+                    }
+                }
             } catch (e: IOException) {
                 e.printStackTrace()
-                emit(Resources.Error(message = "Something went wrong"))
-                null
+                Resources.Error(message = "Network error: ${e.message}")
+
             } catch (e: HttpException) {
                 e.printStackTrace()
-                emit(Resources.Error(message = "Something went wrong"))
-                null
+                Resources.Error(message = "Network error: ${e.message}")
             }
 
-            if (isSuccess == null) {
-                emit(Resources.Loading(isLoading = false))
-            }
-
-            isSuccess.let {
-                emit(Resources.Success(data = it))
-                emit(Resources.Loading(isLoading = false))
-            }
+            emit(Resources.Loading(isLoading = false))
+            emit(result)
         }
     }
 
@@ -55,26 +59,36 @@ class UsersRepositoryImpl @Inject constructor(
         checkAuthCodeRequest: CheckAuthCodeRequest
     ): Flow<Resources<CheckAuthCodeResponse>> {
         return flow {
-            val checkResult = try {
-                usersService.checkAuthCode(checkAuthCodeRequest = checkAuthCodeRequest)
+            emit(Resources.Loading(isLoading = true))
+
+            val result = try {
+                val response =
+                    usersService.checkAuthCode(checkAuthCodeRequest = checkAuthCodeRequest)
+                if (response.isSuccessful && response.code() == 200) {
+                    Resources.Success(response.body())
+                } else {
+                    when (response.code()) {
+                        422 -> Resources.Error(message = parseError(response.errorBody()?.string()))
+                        404 -> Resources.Error(
+                            message = parseAuthCodeError(
+                                response.errorBody()?.string()
+                            )
+                        )
+
+                        else -> Resources.Error(message = "Unknown error")
+                    }
+                }
             } catch (e: IOException) {
                 e.printStackTrace()
-                emit(Resources.Error(message = "Something went wrong"))
-                null
+                Resources.Error(message = "Network error: ${e.message}")
+
             } catch (e: HttpException) {
                 e.printStackTrace()
-                emit(Resources.Error(message = "Something went wrong"))
-                null
+                Resources.Error(message = "Network error: ${e.message}")
             }
 
-            if (checkResult == null) {
-                emit(Resources.Loading(isLoading = false))
-            }
-
-            checkResult.let {
-                emit(Resources.Success(data = it))
-                emit(Resources.Loading(isLoading = false))
-            }
+            emit(Resources.Loading(isLoading = false))
+            emit(result)
         }
     }
 }

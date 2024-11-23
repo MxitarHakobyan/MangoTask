@@ -78,7 +78,7 @@ class EnterPhoneNumberViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            usersRepository.sendAuthCode(SendAuthCodeRequest(phone = state.value.countryCode + state.value.phoneNumber))
+            usersRepository.sendAuthCode(SendAuthCodeRequest(phone = state.value.fullNumber()))
                 .collect { result ->
                     when (result) {
                         is Resources.Loading -> {
@@ -91,9 +91,7 @@ class EnterPhoneNumberViewModel @Inject constructor(
                                     _event.emit(EnterPhoneNumberEvent.PhoneNumberSubmittedSuccessfully)
                                 } else {
                                     _event.emit(
-                                        EnterPhoneNumberEvent.PhoneNumberSubmissionFailed(
-                                            error = "Something went wrong"
-                                        )
+                                        EnterPhoneNumberEvent.PhoneNumberSubmissionFailed(error = "Wrong auth code")
                                     )
                                 }
                                 updateState(_state.value.copy(isLoading = false))
@@ -104,7 +102,7 @@ class EnterPhoneNumberViewModel @Inject constructor(
                             updateState(_state.value.copy(isLoading = false))
                             _event.emit(
                                 EnterPhoneNumberEvent.PhoneNumberSubmissionFailed(
-                                    error = result.message ?: "Something went wrong"
+                                    error = result.message ?: "Unknown error"
                                 )
                             )
                         }

@@ -64,7 +64,7 @@ class RegistrationViewModel @Inject constructor(
             }
 
             is RegistrationIntent.EnterUsername -> {
-                val isValid = usernameRegex.matches(intent.username)
+                val isValid = usernameRegex.matches(intent.username) && intent.username.length >= 5
                 updateState {
                     it.copy(
                         username = intent.username,

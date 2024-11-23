@@ -2,6 +2,10 @@ package com.mango.task.data.repository
 
 import com.mango.task.data.base.Resources
 import com.mango.task.data.localStorage.prefs.SecureStorage
+import com.mango.task.data.localStorage.prefs.SecureStorage.Keys.KEY_ACCESS_TOKEN
+import com.mango.task.data.localStorage.prefs.SecureStorage.Keys.KEY_IS_LOGGED_IN
+import com.mango.task.data.localStorage.prefs.SecureStorage.Keys.KEY_REFRESH_TOKEN
+import com.mango.task.data.localStorage.prefs.SecureStorage.Keys.KEY_USER_ID
 import com.mango.task.data.model.request.CheckAuthCodeRequest
 import com.mango.task.data.model.request.RegistrationRequest
 import com.mango.task.data.model.request.SendAuthCodeRequest
@@ -42,7 +46,12 @@ class UsersRepositoryImpl @Inject constructor(
                     Resources.Success(response.body())
                 } else {
                     when (response.code()) {
-                        422 -> Resources.Error(message = parseErrors(response.errorBody()?.string()))
+                        422 -> Resources.Error(
+                            message = parseErrors(
+                                response.errorBody()?.string()
+                            )
+                        )
+
                         else -> Resources.Error(message = "Unknown error")
                     }
                 }
@@ -70,10 +79,26 @@ class UsersRepositoryImpl @Inject constructor(
                 val response =
                     usersService.checkAuthCode(checkAuthCodeRequest = checkAuthCodeRequest)
                 if (response.isSuccessful && response.code() == 200) {
-                    Resources.Success(response.body())
+                    val body = response.body()
+                    // Store user prefs if user already exists
+                    body?.let {
+                        if (it.isUserExists) {
+                            secureStorage.save(KEY_REFRESH_TOKEN, it.refreshToken)
+                            secureStorage.save(KEY_ACCESS_TOKEN, it.accessToken)
+                            secureStorage.save(KEY_USER_ID, it.userId.toString())
+                            secureStorage.save(KEY_IS_LOGGED_IN, true)
+                        }
+                    }
+                    Resources.Success(body)
+
                 } else {
                     when (response.code()) {
-                        422 -> Resources.Error(message = parseErrors(response.errorBody()?.string()))
+                        422 -> Resources.Error(
+                            message = parseErrors(
+                                response.errorBody()?.string()
+                            )
+                        )
+
                         404 -> Resources.Error(
                             message = parseError(
                                 response.errorBody()?.string()
@@ -102,31 +127,35 @@ class UsersRepositoryImpl @Inject constructor(
             emit(Resources.Loading(isLoading = true))
 
             val result = try {
-                val response =
-                    usersService.registration(registrationRequest = registrationRequest)
+                val response = usersService.registration(registrationRequest)
                 if (response.isSuccessful && response.code() == 201) {
-                    Resources.Success(response.body())
+                    val responseBody = response.body()
+                    responseBody?.let {
+                        secureStorage.save(KEY_REFRESH_TOKEN, it.refreshToken)
+                        secureStorage.save(KEY_ACCESS_TOKEN, it.accessToken)
+                        secureStorage.save(KEY_USER_ID, it.userId.toString())
+                        secureStorage.save(KEY_IS_LOGGED_IN, true)
+                    }
+                    Resources.Success(responseBody)
                 } else {
                     when (response.code()) {
-                        422 -> Resources.Error(message = parseErrors(response.errorBody()?.string()))
-                        400 -> Resources.Error(
-                            message = parseError(
+                        422 -> Resources.Error(
+                            message = parseErrors(
                                 response.errorBody()?.string()
                             )
                         )
 
+                        400 -> Resources.Error(message = parseError(response.errorBody()?.string()))
                         else -> Resources.Error(message = "Unknown error")
                     }
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
                 Resources.Error(message = "Network error: ${e.message}")
-
             } catch (e: HttpException) {
                 e.printStackTrace()
                 Resources.Error(message = "Network error: ${e.message}")
             }
-
             emit(Resources.Loading(isLoading = false))
             emit(result)
         }

@@ -86,7 +86,11 @@ class AuthCodeViewModel @Inject constructor(
                     }
 
                     is Resources.Success -> {
-                        _event.emit(EnterAuthCodeEvent.CodeSubmittedSuccessfully)
+                        _event.emit(
+                            EnterAuthCodeEvent.CodeSubmittedSuccessfully(
+                                result.data?.isUserExists ?: false
+                            )
+                        )
                     }
 
                     is Resources.Error -> {

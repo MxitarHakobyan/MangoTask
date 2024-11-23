@@ -6,7 +6,7 @@
     <!--> Enter phone number screen <!-->
     <string name="enter_your_phone_number_message">Enter your phone number</string>
     <string name="enter_phone_number_page_title">Enter phone number</string>
-    <string name="submit_button_text">Submit</string>
+    <string name="submit_phone_number_button_text">Submit</string>
     <string name="country_code_input_title">Code</string>
     <string name="phone_number_input_title">Phone Number</string>
     <string name="phone_number_input_error_message">Please enter a valid phone number.</string>
@@ -14,4 +14,12 @@
     <string name="country_name_russia">Russia</string>
     <string name="country_name_unknown">Unknown</string>
     <string name="country_name_georgia">Georgia</string>
+
+    <!--> Enter auth code screen <!-->
+    <string name="enter_auth_code_page_title">Enter authentication code</string>
+    <string name="auth_code_input_error_message">Auth code must be 6 digits.</string>
+    <string name="auth_code_input_title">Auth Code</string>
+    <string name="enter_auth_code_message">Enter the authentication code sent via SMS</string>
+    <string name="submit_auth_code_button_text">Submit</string>
+
 </resources>

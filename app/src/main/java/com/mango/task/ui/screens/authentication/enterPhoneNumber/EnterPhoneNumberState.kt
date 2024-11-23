@@ -5,5 +5,4 @@ data class EnterPhoneNumberState(
     val phoneNumber: String = "",
     val countryCode: String = "+7",
     val isPhoneValid: Boolean = true,
-    val isAuthCodeSend: Boolean = false
 )

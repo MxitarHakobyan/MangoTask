@@ -9,6 +9,8 @@ import com.mango.task.data.base.Resources
 import com.mango.task.data.model.request.SendAuthCodeRequest
 import com.mango.task.data.repository.UsersRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,7 +25,6 @@ class EnterPhoneNumberViewModel @Inject constructor(
         const val KEY_COUNTRY_CODE = "country_code"
         const val KEY_IS_PHONE_VALID = "is_phone_valid"
         const val KEY_IS_LOADING = "is_loading"
-        const val KEY_IS_AUTH_CODE_SEND = "is_auth_code_send"
     }
 
     private val _state = mutableStateOf(
@@ -32,7 +33,6 @@ class EnterPhoneNumberViewModel @Inject constructor(
             countryCode = savedStateHandle[KEY_COUNTRY_CODE] ?: "+7",
             isPhoneValid = savedStateHandle[KEY_IS_PHONE_VALID] ?: true,
             isLoading = savedStateHandle[KEY_IS_LOADING] ?: false,
-            isAuthCodeSend = savedStateHandle[KEY_IS_AUTH_CODE_SEND] ?: false
         )
     )
     val state: State<EnterPhoneNumberState> get() = _state
@@ -43,8 +43,11 @@ class EnterPhoneNumberViewModel @Inject constructor(
         savedStateHandle[KEY_COUNTRY_CODE] = newState.countryCode
         savedStateHandle[KEY_IS_PHONE_VALID] = newState.isPhoneValid
         savedStateHandle[KEY_IS_LOADING] = newState.isLoading
-        savedStateHandle[KEY_IS_AUTH_CODE_SEND] = newState.isAuthCodeSend
     }
+
+
+    private val _event = MutableSharedFlow<EnterPhoneNumberEvent>()
+    val event: SharedFlow<EnterPhoneNumberEvent> = _event
 
     fun processIntent(intent: EnterPhoneNumberIntent) {
         when (intent) {
@@ -84,17 +87,26 @@ class EnterPhoneNumberViewModel @Inject constructor(
 
                         is Resources.Success -> {
                             result.data?.isSuccess?.let { isSuccess ->
-                                updateState(
-                                    _state.value.copy(
-                                        isLoading = false,
-                                        isAuthCodeSend = isSuccess,
+                                if (isSuccess) {
+                                    _event.emit(EnterPhoneNumberEvent.PhoneNumberSubmittedSuccessfully)
+                                } else {
+                                    _event.emit(
+                                        EnterPhoneNumberEvent.PhoneNumberSubmissionFailed(
+                                            error = "Something went wrong"
+                                        )
                                     )
-                                )
+                                }
+                                updateState(_state.value.copy(isLoading = false))
                             }
                         }
 
                         is Resources.Error -> {
                             updateState(_state.value.copy(isLoading = false))
+                            _event.emit(
+                                EnterPhoneNumberEvent.PhoneNumberSubmissionFailed(
+                                    error = result.message ?: "Something went wrong"
+                                )
+                            )
                         }
                     }
                 }

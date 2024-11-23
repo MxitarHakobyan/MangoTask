@@ -50,7 +50,7 @@ fun EnterAuthCodeScreen(
                 is EnterAuthCodeEvent.CodeSubmittedSuccessfully -> {
                     if (event.isUserExists) {
                         navController.navigate(route = AppNavItems.BottomNavNavigation.route) {
-                            popUpTo(route = AppNavItems.EnterAuthCode.route) {
+                            popUpTo(route = AppNavItems.EnterPhoneNumber.route) {
                                 inclusive = true
                             }
                         }

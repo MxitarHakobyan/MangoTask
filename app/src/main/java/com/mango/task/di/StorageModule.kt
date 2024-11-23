@@ -2,6 +2,7 @@ package com.mango.task.di
 
 import android.content.Context
 import com.mango.task.data.localStorage.prefs.SecureStorage
+import com.mango.task.data.localStorage.prefs.SharedPrefs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,5 +18,11 @@ object StorageModule {
     @Singleton
     fun provideSecureStorage(@ApplicationContext context: Context): SecureStorage {
         return SecureStorage(context)
+    }
+
+    @Provides
+    @Singleton
+    fun providePrefsStorage(@ApplicationContext context: Context): SharedPrefs {
+        return SharedPrefs(context)
     }
 }

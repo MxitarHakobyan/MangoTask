@@ -3,9 +3,9 @@ package com.mango.task.data.repository
 import com.mango.task.data.base.Resources
 import com.mango.task.data.localStorage.prefs.SecureStorage
 import com.mango.task.data.localStorage.prefs.SecureStorage.Keys.KEY_ACCESS_TOKEN
-import com.mango.task.data.localStorage.prefs.SecureStorage.Keys.KEY_IS_LOGGED_IN
 import com.mango.task.data.localStorage.prefs.SecureStorage.Keys.KEY_REFRESH_TOKEN
 import com.mango.task.data.localStorage.prefs.SecureStorage.Keys.KEY_USER_ID
+import com.mango.task.data.localStorage.prefs.SharedPrefs
 import com.mango.task.data.model.request.CheckAuthCodeRequest
 import com.mango.task.data.model.request.RegistrationRequest
 import com.mango.task.data.model.request.SendAuthCodeRequest
@@ -32,6 +32,7 @@ interface UsersRepository {
 class UsersRepositoryImpl @Inject constructor(
     private val usersService: UsersService,
     private val secureStorage: SecureStorage,
+    private val sharedPrefs: SharedPrefs,
 ) : UsersRepository {
 
     override suspend fun sendAuthCode(
@@ -86,7 +87,7 @@ class UsersRepositoryImpl @Inject constructor(
                             secureStorage.save(KEY_REFRESH_TOKEN, it.refreshToken)
                             secureStorage.save(KEY_ACCESS_TOKEN, it.accessToken)
                             secureStorage.save(KEY_USER_ID, it.userId.toString())
-                            secureStorage.save(KEY_IS_LOGGED_IN, true)
+                            sharedPrefs.setLoggedIn(true)
                         }
                     }
                     Resources.Success(body)
@@ -134,7 +135,7 @@ class UsersRepositoryImpl @Inject constructor(
                         secureStorage.save(KEY_REFRESH_TOKEN, it.refreshToken)
                         secureStorage.save(KEY_ACCESS_TOKEN, it.accessToken)
                         secureStorage.save(KEY_USER_ID, it.userId.toString())
-                        secureStorage.save(KEY_IS_LOGGED_IN, true)
+                        sharedPrefs.setLoggedIn(true)
                     }
                     Resources.Success(responseBody)
                 } else {

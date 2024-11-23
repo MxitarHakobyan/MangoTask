@@ -46,7 +46,7 @@ fun RegistrationScreen(
             when (event) {
                 is RegistrationEvent.UserCreated -> {
                     navController.navigate(AppNavItems.BottomNavNavigation.route) {
-                        popUpTo("${AppNavItems.Registration.route}/${state.phoneNumber}") {
+                        popUpTo(AppNavItems.EnterPhoneNumber.route) {
                             inclusive = true
                         }
                     }

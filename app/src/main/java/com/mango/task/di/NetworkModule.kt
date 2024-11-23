@@ -3,7 +3,7 @@ package com.mango.task.di
 import com.google.gson.Gson
 import com.mango.task.data.localStorage.prefs.SecureStorage
 import com.mango.task.data.localStorage.prefs.SecureStorage.Keys.KEY_ACCESS_TOKEN
-import com.mango.task.data.localStorage.prefs.SecureStorage.Keys.KEY_IS_LOGGED_IN
+import com.mango.task.data.localStorage.prefs.SharedPrefs
 import com.mango.task.data.network.RefreshTokenService
 import com.mango.task.data.network.TokenAuthenticator
 import com.mango.task.data.network.UsersService
@@ -37,6 +37,7 @@ object NetworkModule {
     fun provideOkHttpClient(
         tokenAuthenticator: TokenAuthenticator,
         secureStorage: SecureStorage,
+        sharedPrefs: SharedPrefs,
     ): OkHttpClient {
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
@@ -45,7 +46,7 @@ object NetworkModule {
         builder.addInterceptor { chain ->
             val requestBuilder = chain.request().newBuilder()
 
-            if (secureStorage.getBoolean(KEY_IS_LOGGED_IN)) {
+            if (sharedPrefs.isLoggedIn()) {
                 requestBuilder.addHeader(
                     "Authorization", "Bearer ${
                         secureStorage.get(

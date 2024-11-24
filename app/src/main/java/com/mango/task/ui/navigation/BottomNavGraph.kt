@@ -10,7 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.mango.task.ui.screens.BottomNavigationBar
-import com.mango.task.ui.screens.ProfileScreen
+import com.mango.task.ui.screens.profile.ProfileScreen
 import com.mango.task.ui.screens.home.HomeScreen
 
 @Composable

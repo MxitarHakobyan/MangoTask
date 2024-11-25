@@ -4,11 +4,14 @@ import com.google.gson.Gson
 import com.mango.task.data.localStorage.prefs.SecureStorage
 import com.mango.task.data.model.response.RefreshTokenResponse
 import okhttp3.Authenticator
-import okhttp3.FormBody
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okhttp3.Route
+import okhttp3.logging.HttpLoggingInterceptor
+import org.json.JSONObject
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -25,13 +28,14 @@ class TokenAuthenticator @Inject constructor(
             return null
         }
 
-        val newAccessToken = refreshAccessToken()
+        val newTokensPair = refreshAccessToken()
 
-        return if (newAccessToken != null) {
-            secureStorage.save(SecureStorage.KEY_ACCESS_TOKEN, newAccessToken)
+        return if (newTokensPair?.first != null && newTokensPair.second != null) {
+            secureStorage.save(SecureStorage.KEY_ACCESS_TOKEN, newTokensPair.first!!)
+            secureStorage.save(SecureStorage.KEY_REFRESH_TOKEN, newTokensPair.second!!)
 
             response.request.newBuilder()
-                .header("Authorization", "Bearer $newAccessToken")
+                .header("Authorization", "Bearer $newTokensPair")
                 .header("Authorization-Retry", "true") // Prevent recursive retries
                 .build()
         } else {
@@ -39,16 +43,26 @@ class TokenAuthenticator @Inject constructor(
         }
     }
 
-    private fun refreshAccessToken(): String? {
+    private fun refreshAccessToken(): Pair<String?, String?>? {
         val refreshToken = secureStorage.get(SecureStorage.KEY_REFRESH_TOKEN) ?: return null
+        val client = OkHttpClient().newBuilder().addInterceptor(HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }).addInterceptor { chain ->
+            val requestBuilder = chain.request().newBuilder()
 
-        val client = OkHttpClient()
-        val requestBody = FormBody.Builder()
-            .add("refresh_token", refreshToken)
-            .build()
+            requestBuilder.addHeader("Content-Type", "application/json")
+            requestBuilder.addHeader("accept", "application/json")
+
+            val request = requestBuilder.build()
+            chain.proceed(request)
+        }.build()
+
+        val jsonObject = JSONObject()
+        jsonObject.put("refresh_token", refreshToken)
+        val requestBody = jsonObject.toString().toRequestBody("application/json".toMediaType())
 
         val request = Request.Builder()
-            .url("https://plannerok.ru/api/v1/users/refresh-token")
+            .url("https://plannerok.ru/api/v1/users/refresh-token/")
             .post(requestBody)
             .build()
 
@@ -57,7 +71,7 @@ class TokenAuthenticator @Inject constructor(
             if (response.isSuccessful) {
                 val responseBody = response.body?.string()
                 val refreshResponse = gson.fromJson(responseBody, RefreshTokenResponse::class.java)
-                refreshResponse.accessToken
+                Pair(refreshResponse.accessToken, refreshResponse.refreshToken)
             } else {
                 null // Handle refresh token failure
             }

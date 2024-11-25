@@ -1,5 +1,6 @@
 package com.mango.task.ui.screens.profile
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,6 +31,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,6 +46,7 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
 
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = false)
 
@@ -56,7 +60,7 @@ fun ProfileScreen(
                 actions = {
                     if (state.isEditing) {
                         IconButton(onClick = { viewModel.handleIntent(ProfileIntent.ExitEditMode) }) {
-                            Icon(Icons.Filled.Close, contentDescription = "Close Edit Mode")
+                            Icon(imageVector = Icons.Filled.Close, tint = Color.White, contentDescription = "Close Edit Mode")
                         }
                     }
                 }
@@ -75,8 +79,10 @@ fun ProfileScreen(
     ) { paddingValues ->
         SwipeRefresh(
             state = swipeRefreshState,
+            swipeEnabled = !state.isEditing,
             onRefresh = {
-            }
+                viewModel.handleIntent(ProfileIntent.RefreshProfile)
+            },
         ) {
             Column(
                 modifier = Modifier
@@ -96,12 +102,15 @@ fun ProfileScreen(
                                 biography = updatedState.biography,
                                 city = updatedState.city,
                                 avatarUrl = updatedState.avatarUrl,
-                                phoneNumber = updatedState.phoneNumber
                             )
                         )
                     }
                 )
             }
+        }
+
+        if (state.errorMessage.isNotEmpty()) {
+            Toast.makeText(context, state.errorMessage, Toast.LENGTH_SHORT).show()
         }
     }
 }

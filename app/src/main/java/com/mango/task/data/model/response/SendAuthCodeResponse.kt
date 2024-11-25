@@ -4,5 +4,5 @@ import com.google.gson.annotations.SerializedName
 
 data class SendAuthCodeResponse(
     @SerializedName(value = "is_success")
-    val isSuccess: Boolean
+    val isSuccess: Boolean,
 )

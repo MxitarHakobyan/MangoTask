@@ -63,9 +63,9 @@ class UsersRepositoryImpl @Inject constructor(
             } catch (e: HttpException) {
                 e.printStackTrace()
                 Resources.Error(message = "Network error: ${e.message}")
+            } finally {
+                emit(Resources.Loading(isLoading = false))
             }
-
-            emit(Resources.Loading(isLoading = false))
             emit(result)
         }
     }
@@ -116,9 +116,9 @@ class UsersRepositoryImpl @Inject constructor(
             } catch (e: HttpException) {
                 e.printStackTrace()
                 Resources.Error(message = "Network error: ${e.message}")
+            } finally {
+                emit(Resources.Loading(isLoading = false))
             }
-
-            emit(Resources.Loading(isLoading = false))
             emit(result)
         }
     }
@@ -156,8 +156,9 @@ class UsersRepositoryImpl @Inject constructor(
             } catch (e: HttpException) {
                 e.printStackTrace()
                 Resources.Error(message = "Network error: ${e.message}")
+            } finally {
+                emit(Resources.Loading(isLoading = false))
             }
-            emit(Resources.Loading(isLoading = false))
             emit(result)
         }
     }

@@ -8,6 +8,7 @@ import com.mango.task.data.model.response.CheckAuthCodeResponse
 import com.mango.task.data.model.response.ProfileResponse
 import com.mango.task.data.model.response.RegistrationResponse
 import com.mango.task.data.model.response.SendAuthCodeResponse
+import com.mango.task.data.model.response.UpdateProfileResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -28,5 +29,5 @@ interface UsersService {
     suspend fun fetchProfile(): Response<ProfileResponse>
 
     @PUT("users/me")
-    suspend fun updateProfile(@Body profileData: ProfileUpdateRequest): Response<ProfileResponse>
+    suspend fun updateProfile(@Body profileData: ProfileUpdateRequest): Response<UpdateProfileResponse>
 }

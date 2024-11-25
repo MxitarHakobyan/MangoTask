@@ -21,10 +21,10 @@ class EnterPhoneNumberViewModel @Inject constructor(
 ) : ViewModel() {
 
     private companion object {
-        const val KEY_PHONE_NUMBER = "phone_number"
-        const val KEY_COUNTRY_CODE = "country_code"
-        const val KEY_IS_PHONE_VALID = "is_phone_valid"
-        const val KEY_IS_LOADING = "is_loading"
+        private const val KEY_PHONE_NUMBER = "phone_number"
+        private const val KEY_COUNTRY_CODE = "country_code"
+        private const val KEY_IS_PHONE_VALID = "is_phone_valid"
+        private const val KEY_IS_LOADING = "is_loading"
     }
 
     private val _state = MutableStateFlow(

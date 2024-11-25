@@ -2,11 +2,16 @@ package com.mango.task.ui.screens.profile
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.mango.task.data.base.Resources
+import com.mango.task.data.model.request.Avatar
+import com.mango.task.data.model.request.ProfileUpdateRequest
 import com.mango.task.data.repository.ProfileRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -16,14 +21,14 @@ class ProfileViewModel @Inject constructor(
 ) : ViewModel() {
 
     companion object {
-        private const val KEY_PROFILE_STATE = "profile_state"
+        private const val KEY_IS_LOADING = "is_loading"
     }
 
     private val _state = MutableStateFlow(ProfileState())
     val state: StateFlow<ProfileState> = _state
 
     init {
-        _state.value = savedStateHandle.get<ProfileState>(KEY_PROFILE_STATE) ?: ProfileState()
+        fetchProfileData(forceUpdate = true)
     }
 
     fun handleIntent(intent: ProfileIntent) {
@@ -31,25 +36,97 @@ class ProfileViewModel @Inject constructor(
             is ProfileIntent.EditProfile -> {
                 _state.update { it.copy(isEditing = true) }
             }
+
+            is ProfileIntent.RefreshProfile -> {
+                fetchProfileData(forceUpdate = true)
+            }
+
             is ProfileIntent.ExitEditMode -> {
                 _state.update { it.copy(isEditing = false) }
             }
+
             is ProfileIntent.UpdateProfile -> {
-                _state.update {
-                    val updatedState = it.copy(
-                        fullName = intent.fullName,
-                        username = intent.username,
-                        dateOfBirth = intent.dateOfBirth,
-                        biography = intent.biography,
-                        city = intent.city,
-                        avatarUrl = intent.avatarUrl,
-                        phoneNumber = intent.phoneNumber,
-                        isEditing = false
-                    )
-                    savedStateHandle[KEY_PROFILE_STATE] = updatedState
-                    updatedState
+                viewModelScope.launch {
+                    profileRepository.updateProfile(
+                        ProfileUpdateRequest(
+                            name = intent.fullName,
+                            username = intent.username,
+                            birthday = intent.dateOfBirth.ifEmpty { null },
+                            city = intent.city,
+                            status = intent.biography,
+                            avatar = Avatar("", intent.avatarUrl)
+                        )
+                    ).collect { result ->
+                        when (result) {
+                            is Resources.Loading -> {
+                                updateState { it.copy(isLoading = true) }
+                                savedStateHandle[KEY_IS_LOADING] = true
+                            }
+
+                            is Resources.Success -> {
+                                if (result.data == true) {
+                                    fetchProfileData(forceUpdate = false)
+                                    updateState {
+                                        it.copy(isEditing = false)
+                                    }
+                                } else {
+                                    updateState {
+                                        it.copy(
+                                            isLoading = false,
+                                            errorMessage = "Saving failed",
+                                            isEditing = false,
+                                        )
+                                    }
+                                }
+                            }
+
+                            is Resources.Error -> {
+                                updateState {
+                                    it.copy(
+                                        isLoading = false,
+                                        errorMessage = result.message ?: "Unknown error"
+                                    )
+                                }
+                                savedStateHandle[KEY_IS_LOADING] = false
+                            }
+                        }
+                    }
                 }
             }
         }
+    }
+
+    private fun fetchProfileData(forceUpdate: Boolean = false) {
+        viewModelScope.launch {
+            profileRepository.fetchProfile(forceUpdate = forceUpdate)
+                .collect { result ->
+                    when (result) {
+                        is Resources.Loading -> {
+                            updateState { it.copy(isLoading = true) }
+                            savedStateHandle[KEY_IS_LOADING] = true
+                        }
+
+                        is Resources.Success -> {
+                            result.data?.let { data ->
+                                _state.value = data
+                            }
+                        }
+
+                        is Resources.Error -> {
+                            updateState {
+                                it.copy(
+                                    isLoading = false,
+                                    errorMessage = result.message ?: "Unknown error"
+                                )
+                            }
+                            savedStateHandle[KEY_IS_LOADING] = false
+                        }
+                    }
+                }
+        }
+    }
+
+    private fun updateState(update: (ProfileState) -> ProfileState) {
+        _state.update(update)
     }
 }

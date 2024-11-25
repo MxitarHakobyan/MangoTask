@@ -4,5 +4,5 @@ import com.google.gson.annotations.SerializedName
 
 data class SendAuthCodeRequest(
     @SerializedName(value = "phone")
-    val phone: String
+    val phone: String,
 )

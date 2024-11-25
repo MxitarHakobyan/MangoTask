@@ -22,15 +22,28 @@ android {
             useSupportLibrary = true
         }
     }
-
     buildTypes {
         release {
+            buildConfigField("String", "BASE_URL", "\"https://plannerok.ru/api/v1/\"")
+            buildConfigField("String", "BASE_IMAGE_URL", "\"https://plannerok.ru/\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
+        debug {
+            buildConfigField("String", "BASE_URL", "\"https://plannerok.ru/api/v1/\"")
+            buildConfigField("String", "BASE_IMAGE_URL", "\"https://plannerok.ru/\"")
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+    buildFeatures {
+        buildConfig = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

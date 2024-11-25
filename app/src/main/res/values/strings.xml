@@ -30,4 +30,20 @@
     <string name="full_name_input_title">Full Name</string>
     <string name="registration_button_text">"Register"</string>
 
+    <!--> Profile screen <!-->
+    <string name="profile_page_title">Profile</string>
+    <string name="edit_profile_button_text">"Edit Profile"</string>
+    <string name="close_editing_button_text">Close Edit Mode</string>
+    <string name="user_avatar_text">Avatar</string>
+    <string name="full_name_avatar_text">Avatar</string>
+    <string name="full_name_label">Full Name</string>
+    <string name="username_label">Username</string>
+    <string name="dob_label">Date of Birth</string>
+    <string name="biography_label">Biography</string>
+    <string name="city_label">City</string>
+    <string name="zodiac_sign_label">Zodiac Sign</string>
+    <string name="phone_label">Phone</string>
+    <string name="save_button">Save</string>
+    <string name="empty_data">…</string>
+
 </resources>

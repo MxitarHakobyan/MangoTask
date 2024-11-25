@@ -54,7 +54,7 @@ class ProfileViewModel @Inject constructor(
                             birthday = intent.dateOfBirth.ifEmpty { null },
                             city = intent.city,
                             status = intent.biography,
-                            avatar = Avatar("", intent.avatarUrl)
+                            avatar = Avatar(filename = intent.fileName, base64 = intent.base64)
                         )
                     ).collect { result ->
                         when (result) {

@@ -1,6 +1,7 @@
 package com.mango.task.di
 
 import com.google.gson.Gson
+import com.mango.task.BuildConfig.BASE_URL
 import com.mango.task.data.localStorage.prefs.SecureStorage
 import com.mango.task.data.localStorage.prefs.SecureStorage.Keys.KEY_ACCESS_TOKEN
 import com.mango.task.data.localStorage.prefs.SharedPrefs
@@ -71,7 +72,7 @@ object NetworkModule {
         client: OkHttpClient,
         gson: Gson,
     ): Retrofit = Retrofit.Builder()
-        .baseUrl("https://plannerok.ru/api/v1/")
+        .baseUrl(BASE_URL)
         .client(client)
         .addConverterFactory(GsonConverterFactory.create(gson))
         .addConverterFactory(GsonConverterFactory.create())

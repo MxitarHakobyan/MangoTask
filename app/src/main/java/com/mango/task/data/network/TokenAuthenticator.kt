@@ -1,6 +1,7 @@
 package com.mango.task.data.network
 
 import com.google.gson.Gson
+import com.mango.task.BuildConfig.BASE_URL
 import com.mango.task.data.localStorage.prefs.SecureStorage
 import com.mango.task.data.model.response.RefreshTokenResponse
 import okhttp3.Authenticator
@@ -35,7 +36,7 @@ class TokenAuthenticator @Inject constructor(
             secureStorage.save(SecureStorage.KEY_REFRESH_TOKEN, newTokensPair.second!!)
 
             response.request.newBuilder()
-                .header("Authorization", "Bearer $newTokensPair")
+                .header("Authorization", "Bearer ${newTokensPair.first}")
                 .header("Authorization-Retry", "true") // Prevent recursive retries
                 .build()
         } else {
@@ -62,7 +63,7 @@ class TokenAuthenticator @Inject constructor(
         val requestBody = jsonObject.toString().toRequestBody("application/json".toMediaType())
 
         val request = Request.Builder()
-            .url("https://plannerok.ru/api/v1/users/refresh-token/")
+            .url("${BASE_URL}users/refresh-token/")
             .post(requestBody)
             .build()
 

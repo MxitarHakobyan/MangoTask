@@ -10,6 +10,7 @@ sealed class ProfileIntent {
         val dateOfBirth: String,
         val biography: String,
         val city: String,
-        val avatarUrl: String,
+        val base64: String,
+        val fileName: String = "avatar",
     ) : ProfileIntent()
 }

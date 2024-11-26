@@ -42,7 +42,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             _viewState.value = _viewState.value.copy(isLoading = true)
             try {
-                secureStorage.clear()
+                secureStorage.clearStorage()
             } catch (e: Exception) {
                 _viewIntent.emit(HomeViewIntent.ShowMessage("Failed to clear storage: ${e.message}"))
             } finally {

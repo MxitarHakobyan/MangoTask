@@ -48,18 +48,23 @@ class ProfileViewModel @Inject constructor(
             is ProfileIntent.UpdateProfile -> {
                 viewModelScope.launch {
                     profileRepository.updateProfile(
-                        ProfileUpdateRequest(
-                            name = intent.fullName,
-                            username = intent.username,
-                            birthday = intent.dateOfBirth.ifEmpty { null },
-                            city = intent.city,
-                            status = intent.biography,
-                            avatar = Avatar(filename = intent.fileName, base64 = intent.base64)
-                        )
+                        intent.run {
+                            ProfileUpdateRequest(
+                                name = fullName,
+                                username = state.value.username,
+                                birthday = dateOfBirth.ifEmpty { null },
+                                city = city,
+                                status = biography,
+                                avatar = Avatar(
+                                    filename = if (base64 == null) null else "avatar",
+                                    base64 = base64
+                                )
+                            )
+                        }
                     ).collect { result ->
                         when (result) {
                             is Resources.Loading -> {
-                                updateState { it.copy(isLoading = true) }
+                                updateState { it.copy(isLoading = result.isLoading) }
                                 savedStateHandle[KEY_IS_LOADING] = true
                             }
 
@@ -81,6 +86,15 @@ class ProfileViewModel @Inject constructor(
                             }
 
                             is Resources.Error -> {
+                                // I think api should allow update request without avatar data because user not every time wanna to change avatar
+                                if (result.message?.contains("filename: field required") == true ||
+                                    result.message?.contains("base_64: field required") == true ) {
+                                    updateState {
+                                        it.copy(isEditing = false)
+                                    }
+                                    savedStateHandle[KEY_IS_LOADING] = false
+                                    return@collect
+                                }
                                 updateState {
                                     it.copy(
                                         isLoading = false,
@@ -102,7 +116,7 @@ class ProfileViewModel @Inject constructor(
                 .collect { result ->
                     when (result) {
                         is Resources.Loading -> {
-                            updateState { it.copy(isLoading = true) }
+                            updateState { it.copy(isLoading = result.isLoading) }
                             savedStateHandle[KEY_IS_LOADING] = true
                         }
 

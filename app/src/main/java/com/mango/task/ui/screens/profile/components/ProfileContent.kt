@@ -27,14 +27,12 @@ fun ProfileContent(
     onSave: (ProfileState) -> Unit,
 ) {
     var fullName by remember { mutableStateOf(state.fullName) }
-    var username by remember { mutableStateOf(state.username) }
     var dateOfBirth by remember { mutableStateOf(state.dateOfBirth) }
     var biography by remember { mutableStateOf(state.biography) }
     var city by remember { mutableStateOf(state.city) }
 
     LaunchedEffect(state) {
         fullName = state.fullName
-        username = state.username
         dateOfBirth = state.dateOfBirth
         biography = state.biography
         city = state.city
@@ -52,10 +50,6 @@ fun ProfileContent(
                 label = stringResource(R.string.full_name_label),
                 value = fullName,
                 onValueChange = { fullName = it })
-            EditableTextField(
-                label = stringResource(id = R.string.username_label),
-                value = username,
-                onValueChange = { username = it })
             CalendarPickerTextField(
                 label = stringResource(id = R.string.dob_label),
                 value = dateOfBirth,
@@ -75,7 +69,6 @@ fun ProfileContent(
                     onSave(
                         state.copy(
                             fullName = fullName,
-                            username = username,
                             dateOfBirth = dateOfBirth,
                             biography = biography,
                             city = city,

@@ -6,11 +6,9 @@ sealed class ProfileIntent {
     data object ExitEditMode : ProfileIntent()
     data class UpdateProfile(
         val fullName: String,
-        val username: String,
         val dateOfBirth: String,
         val biography: String,
         val city: String,
-        val base64: String,
-        val fileName: String = "avatar",
+        val base64: String?,
     ) : ProfileIntent()
 }

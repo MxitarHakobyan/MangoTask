@@ -1,7 +1,9 @@
 package com.mango.task.ui.screens.profile
 
 import android.widget.Toast
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -9,6 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -24,11 +27,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -42,7 +47,7 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
-    var base64 by remember { mutableStateOf("") }
+    var base64: String? by remember { mutableStateOf(null) }
     val context = LocalContext.current
 
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = false)
@@ -50,7 +55,12 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.profile_page_title), fontWeight = FontWeight.Bold) },
+                title = {
+                    Text(
+                        stringResource(R.string.profile_page_title),
+                        fontWeight = FontWeight.Bold
+                    )
+                },
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary
                 ),
@@ -73,42 +83,61 @@ fun ProfileScreen(
                     onClick = { viewModel.handleIntent(ProfileIntent.EditProfile) },
                     containerColor = MaterialTheme.colorScheme.secondary,
                 ) {
-                    Icon(Icons.Filled.Edit, contentDescription = stringResource(R.string.edit_profile_button_text))
+                    Icon(
+                        Icons.Filled.Edit,
+                        contentDescription = stringResource(R.string.edit_profile_button_text)
+                    )
                 }
             }
         }
     ) { paddingValues ->
-        SwipeRefresh(
-            state = swipeRefreshState,
-            swipeEnabled = !state.isEditing,
-            onRefresh = {
-                viewModel.handleIntent(ProfileIntent.RefreshProfile)
-            },
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .verticalScroll(rememberScrollState())
+            ProfileHeader(state = state) {
+                base64 = it
+            }
+            SwipeRefresh(
+                state = swipeRefreshState,
+                swipeEnabled = !state.isEditing,
+                onRefresh = {
+                    viewModel.handleIntent(ProfileIntent.RefreshProfile)
+                },
             ) {
-                ProfileHeader(state = state) {
-                    base64 = it
-                }
-                ProfileContent(
-                    state = state,
-                    onSave = { updatedState ->
-                        viewModel.handleIntent(
-                            ProfileIntent.UpdateProfile(
-                                fullName = updatedState.fullName,
-                                username = updatedState.username,
-                                dateOfBirth = updatedState.dateOfBirth,
-                                biography = updatedState.biography,
-                                city = updatedState.city,
-                                base64 = base64,
-                            )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    if (state.isLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .defaultMinSize(minHeight = 300.dp)
+                                .padding(paddingValues),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    } else {
+                        ProfileContent(
+                            state = state,
+                            onSave = { updatedState ->
+                                viewModel.handleIntent(
+                                    ProfileIntent.UpdateProfile(
+                                        fullName = updatedState.fullName,
+                                        dateOfBirth = updatedState.dateOfBirth,
+                                        biography = updatedState.biography,
+                                        city = updatedState.city,
+                                        base64 = base64,
+                                    )
+                                )
+                            }
                         )
                     }
-                )
+                }
             }
         }
 

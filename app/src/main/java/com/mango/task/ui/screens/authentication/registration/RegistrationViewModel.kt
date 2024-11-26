@@ -105,7 +105,7 @@ class RegistrationViewModel @Inject constructor(
             ).collect { result ->
                 when (result) {
                     is Resources.Loading -> {
-                        updateState { it.copy(isLoading = true) }
+                        updateState { it.copy(isLoading = result.isLoading) }
                         savedStateHandle[KEY_IS_LOADING] = true
                     }
 

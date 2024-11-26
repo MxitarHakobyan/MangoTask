@@ -3,7 +3,6 @@ package com.mango.task.di
 import com.google.gson.Gson
 import com.mango.task.BuildConfig.BASE_URL
 import com.mango.task.data.localStorage.prefs.SecureStorage
-import com.mango.task.data.localStorage.prefs.SecureStorage.Keys.KEY_ACCESS_TOKEN
 import com.mango.task.data.localStorage.prefs.SharedPrefs
 import com.mango.task.data.network.RefreshTokenService
 import com.mango.task.data.network.TokenAuthenticator
@@ -50,9 +49,7 @@ object NetworkModule {
             if (sharedPrefs.isLoggedIn()) {
                 requestBuilder.addHeader(
                     "Authorization", "Bearer ${
-                        secureStorage.get(
-                            KEY_ACCESS_TOKEN
-                        )
+                        secureStorage.getAccessToken()
                     }"
                 )
             }

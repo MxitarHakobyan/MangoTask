@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
 fun ProfileHeader(
     modifier: Modifier = Modifier,
     state: ProfileState,
-    onAvatarSelected: (String) -> Unit,
+    onAvatarSelected: (String?) -> Unit,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()

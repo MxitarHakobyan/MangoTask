@@ -19,7 +19,7 @@ data class ProfileUpdateRequest(
 
 data class Avatar(
     @SerializedName("filename")
-    val filename: String,
+    val filename: String?,
     @SerializedName("base_64")
-    val base64: String,
+    val base64: String?,
 )

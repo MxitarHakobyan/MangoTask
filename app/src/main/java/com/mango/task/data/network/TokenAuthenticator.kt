@@ -32,8 +32,8 @@ class TokenAuthenticator @Inject constructor(
         val newTokensPair = refreshAccessToken()
 
         return if (newTokensPair?.first != null && newTokensPair.second != null) {
-            secureStorage.save(SecureStorage.KEY_ACCESS_TOKEN, newTokensPair.first!!)
-            secureStorage.save(SecureStorage.KEY_REFRESH_TOKEN, newTokensPair.second!!)
+            secureStorage.saveAccessToken(newTokensPair.first!!)
+            secureStorage.saveRefreshToken(newTokensPair.second!!)
 
             response.request.newBuilder()
                 .header("Authorization", "Bearer ${newTokensPair.first}")
@@ -45,7 +45,7 @@ class TokenAuthenticator @Inject constructor(
     }
 
     private fun refreshAccessToken(): Pair<String?, String?>? {
-        val refreshToken = secureStorage.get(SecureStorage.KEY_REFRESH_TOKEN) ?: return null
+        val refreshToken = secureStorage.getRefreshToken() ?: return null
         val client = OkHttpClient().newBuilder().addInterceptor(HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }).addInterceptor { chain ->

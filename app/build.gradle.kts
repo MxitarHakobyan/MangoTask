@@ -23,9 +23,12 @@ android {
         }
     }
     buildTypes {
-        release {
+        defaultConfig {
+            buildConfigField("String", "PASSWORD", "\"!DONT-SHARE-IT\"")
             buildConfigField("String", "BASE_URL", "\"https://plannerok.ru/api/v1/\"")
             buildConfigField("String", "BASE_IMAGE_URL", "\"https://plannerok.ru/\"")
+        }
+        release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -33,8 +36,6 @@ android {
             )
         }
         debug {
-            buildConfigField("String", "BASE_URL", "\"https://plannerok.ru/api/v1/\"")
-            buildConfigField("String", "BASE_IMAGE_URL", "\"https://plannerok.ru/\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -42,6 +43,8 @@ android {
             )
         }
     }
+
+
     buildFeatures {
         buildConfig = true
     }

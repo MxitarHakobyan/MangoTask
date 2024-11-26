@@ -2,9 +2,6 @@ package com.mango.task.data.repository
 
 import com.mango.task.data.base.Resources
 import com.mango.task.data.localStorage.prefs.SecureStorage
-import com.mango.task.data.localStorage.prefs.SecureStorage.Keys.KEY_ACCESS_TOKEN
-import com.mango.task.data.localStorage.prefs.SecureStorage.Keys.KEY_REFRESH_TOKEN
-import com.mango.task.data.localStorage.prefs.SecureStorage.Keys.KEY_USER_ID
 import com.mango.task.data.localStorage.prefs.SharedPrefs
 import com.mango.task.data.model.request.CheckAuthCodeRequest
 import com.mango.task.data.model.request.RegistrationRequest
@@ -84,9 +81,9 @@ class UsersRepositoryImpl @Inject constructor(
                     // Store user prefs if user already exists
                     body?.let {
                         if (it.isUserExists) {
-                            secureStorage.save(KEY_REFRESH_TOKEN, it.refreshToken)
-                            secureStorage.save(KEY_ACCESS_TOKEN, it.accessToken)
-                            secureStorage.save(KEY_USER_ID, it.userId.toString())
+                            secureStorage.saveAccessToken(it.accessToken)
+                            secureStorage.saveRefreshToken(it.refreshToken)
+                            sharedPrefs.setUserId(it.userId)
                             sharedPrefs.setLoggedIn(true)
                         }
                     }
@@ -132,9 +129,9 @@ class UsersRepositoryImpl @Inject constructor(
                 if (response.isSuccessful && response.code() == 201) {
                     val responseBody = response.body()
                     responseBody?.let {
-                        secureStorage.save(KEY_REFRESH_TOKEN, it.refreshToken)
-                        secureStorage.save(KEY_ACCESS_TOKEN, it.accessToken)
-                        secureStorage.save(KEY_USER_ID, it.userId.toString())
+                        secureStorage.saveAccessToken(it.accessToken)
+                        secureStorage.saveRefreshToken(it.refreshToken)
+                        sharedPrefs.setUserId(it.userId)
                         sharedPrefs.setLoggedIn(true)
                     }
                     Resources.Success(responseBody)

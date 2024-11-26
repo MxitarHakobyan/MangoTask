@@ -45,5 +45,6 @@
     <string name="phone_label">Phone</string>
     <string name="save_button">Save</string>
     <string name="empty_data">…</string>
+    <string name="profile_details">Details</string>
 
 </resources>

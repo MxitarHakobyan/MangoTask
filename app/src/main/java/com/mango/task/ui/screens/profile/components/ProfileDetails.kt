@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,9 +30,16 @@ fun ProfileDetails(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        Text(
+            modifier = Modifier.padding(top = 4.dp),
+            text = stringResource(R.string.profile_details),
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+        )
+
         ProfileRow(
             label = stringResource(R.string.full_name_label),
             value = state.fullName,

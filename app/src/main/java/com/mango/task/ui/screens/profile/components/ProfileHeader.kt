@@ -1,13 +1,16 @@
 package com.mango.task.ui.screens.profile.components
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -21,10 +24,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.mango.task.BuildConfig.BASE_IMAGE_URL
@@ -33,9 +36,11 @@ import com.mango.task.ui.screens.profile.ProfileState
 import com.mango.task.ui.utils.convertImageToBase64
 import kotlinx.coroutines.launch
 
+@SuppressLint("UseOfNonLambdaOffsetOverload")
 @Composable
 fun ProfileHeader(
     modifier: Modifier = Modifier,
+    scrollState: ScrollState,
     state: ProfileState,
     onAvatarSelected: (String?) -> Unit,
 ) {
@@ -57,6 +62,8 @@ fun ProfileHeader(
         }
     }
 
+    val scale = 1f - (scrollState.value / 350f)
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -72,28 +79,19 @@ fun ProfileHeader(
         }
 
         Image(
-            painter = painter,
-            contentDescription = stringResource(R.string.user_avatar_text),
             modifier = Modifier
                 .size(120.dp)
+                .graphicsLayer(
+                    scaleX = scale,
+                    scaleY = scale,
+                )
+                .offset(y = (scrollState.value / 3).dp)
                 .clip(CircleShape)
                 .clickable(state.isEditing) {
                     if (state.isEditing) galleryLauncher.launch("image/*")
-                }
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ProfileHeaderPreview() {
-    MaterialTheme {
-        ProfileHeader(
-            state = ProfileState(
-                isEditing = true,
-                miniAvatarUrl = ""
-            ),
-            onAvatarSelected = {}
+                },
+            painter = painter,
+            contentDescription = stringResource(R.string.user_avatar_text),
         )
     }
 }

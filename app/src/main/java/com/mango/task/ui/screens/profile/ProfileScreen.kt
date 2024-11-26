@@ -1,10 +1,14 @@
 package com.mango.task.ui.screens.profile
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -41,6 +45,7 @@ import com.mango.task.R
 import com.mango.task.ui.screens.profile.components.ProfileContent
 import com.mango.task.ui.screens.profile.components.ProfileHeader
 
+@SuppressLint("UseOfNonLambdaOffsetOverload")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
@@ -51,8 +56,10 @@ fun ProfileScreen(
     val context = LocalContext.current
 
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = false)
+    val scrollState = rememberScrollState()
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             TopAppBar(
                 title = {
@@ -95,10 +102,15 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .verticalScroll(scrollState)
         ) {
-            ProfileHeader(state = state) {
-                base64 = it
-            }
+            ProfileHeader(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .offset(y = (-scrollState.value / 8).dp),
+                state = state,
+                scrollState = scrollState,
+            ) { base64 = it }
             SwipeRefresh(
                 state = swipeRefreshState,
                 swipeEnabled = !state.isEditing,
@@ -106,17 +118,12 @@ fun ProfileScreen(
                     viewModel.handleIntent(ProfileIntent.RefreshProfile)
                 },
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                ) {
+                Column(modifier = Modifier.fillMaxSize()) {
                     if (state.isLoading) {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .defaultMinSize(minHeight = 300.dp)
-                                .padding(paddingValues),
+                                .defaultMinSize(minHeight = 300.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             CircularProgressIndicator()

@@ -1,4 +1,4 @@
-package com.mango.task.ui
+package com.mango.task.ui.screens
 
 import MangoTaskTheme
 import android.os.Bundle

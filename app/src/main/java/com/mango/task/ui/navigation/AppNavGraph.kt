@@ -1,5 +1,7 @@
 package com.mango.task.ui.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -7,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.mango.task.ui.screens.splash.SplashScreen
 import com.mango.task.ui.screens.authentication.enterAuthCode.EnterAuthCodeScreen
 import com.mango.task.ui.screens.authentication.enterPhoneNumber.EnterPhoneNumber
 import com.mango.task.ui.screens.authentication.registration.RegistrationScreen
@@ -20,10 +23,29 @@ fun AppNavGraph() {
 
     NavHost(
         navController = navController,
-        startDestination = if (navViewModel.isLoggedIn()) {
-            AppNavItems.BottomNavNavigation.route
-        } else AppNavItems.EnterPhoneNumber.route
+        startDestination = AppNavItems.SplashScreen.route,
+        enterTransition = {
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+            )
+        },
+        popExitTransition = {
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+            )
+        },
     ) {
+        composable(route = AppNavItems.SplashScreen.route) {
+            SplashScreen(onSplashFinished = {
+                navController.navigate(
+                    if (navViewModel.isLoggedIn()) {
+                        AppNavItems.BottomNavNavigation.route
+                    } else AppNavItems.EnterPhoneNumber.route
+                ) {
+                    popUpTo(AppNavItems.SplashScreen.route) { inclusive = true }
+                }
+            })
+        }
         composable(route = AppNavItems.EnterPhoneNumber.route) { EnterPhoneNumber(navController = navController) }
 
         composable(

@@ -25,6 +25,7 @@ fun ProfileContent(
     modifier: Modifier = Modifier,
     state: ProfileState,
     onSave: (ProfileState) -> Unit,
+    onLogoutClicked: () -> Unit,
 ) {
     var fullName by remember { mutableStateOf(state.fullName) }
     var dateOfBirth by remember { mutableStateOf(state.dateOfBirth) }
@@ -47,6 +48,7 @@ fun ProfileContent(
     ) {
         if (state.isEditing) {
             EditableTextField(
+                modifier= Modifier.padding(top = 16.dp),
                 label = stringResource(R.string.full_name_label),
                 value = fullName,
                 onValueChange = { fullName = it })
@@ -65,6 +67,8 @@ fun ProfileContent(
             )
 
             Button(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(top = 16.dp, start = 24.dp, end = 24.dp),
                 onClick = {
                     onSave(
                         state.copy(
@@ -75,12 +79,13 @@ fun ProfileContent(
                         )
                     )
                 },
-                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(stringResource(id = R.string.save_button), style = MaterialTheme.typography.bodyLarge)
             }
         } else {
-            ProfileDetails(state = state)
+            ProfileDetails(state = state) {
+                onLogoutClicked()
+            }
         }
     }
 }

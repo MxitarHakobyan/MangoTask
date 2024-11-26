@@ -24,8 +24,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,9 +39,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.mango.task.R
+import com.mango.task.ui.navigation.AppNavItems
 import com.mango.task.ui.screens.profile.components.ProfileContent
 import com.mango.task.ui.screens.profile.components.ProfileHeader
 
@@ -49,6 +51,7 @@ import com.mango.task.ui.screens.profile.components.ProfileHeader
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
+    navController: NavController,
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
@@ -57,6 +60,22 @@ fun ProfileScreen(
 
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = false)
     val scrollState = rememberScrollState()
+
+    LaunchedEffect(Unit) {
+        viewModel.viewEvent.collect { viewEvent ->
+            when (viewEvent) {
+                is ProfileEvent.ShowMessage -> {
+                    Toast.makeText(context, viewEvent.message, Toast.LENGTH_SHORT).show()
+                }
+
+                ProfileEvent.NavigateToLogin -> {
+                    navController.navigate(AppNavItems.EnterPhoneNumber.route) {
+                        popUpTo(0)
+                    }
+                }
+            }
+        }
+    }
 
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
@@ -68,9 +87,6 @@ fun ProfileScreen(
                         fontWeight = FontWeight.Bold
                     )
                 },
-                colors = TopAppBarDefaults.mediumTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                ),
                 actions = {
                     if (state.isEditing) {
                         IconButton(onClick = { viewModel.handleIntent(ProfileIntent.ExitEditMode) }) {
@@ -142,14 +158,12 @@ fun ProfileScreen(
                                     )
                                 )
                             }
-                        )
+                        ) {
+                            viewModel.handleIntent(ProfileIntent.Logout)
+                        }
                     }
                 }
             }
-        }
-
-        if (state.errorMessage.isNotEmpty()) {
-            Toast.makeText(context, state.errorMessage, Toast.LENGTH_SHORT).show()
         }
     }
 }

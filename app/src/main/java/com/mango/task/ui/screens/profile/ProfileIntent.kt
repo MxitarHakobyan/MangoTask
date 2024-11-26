@@ -1,9 +1,11 @@
 package com.mango.task.ui.screens.profile
 
+
 sealed class ProfileIntent {
     data object EditProfile : ProfileIntent()
     data object RefreshProfile : ProfileIntent()
     data object ExitEditMode : ProfileIntent()
+    data object Logout : ProfileIntent()
     data class UpdateProfile(
         val fullName: String,
         val dateOfBirth: String,

@@ -1,6 +1,7 @@
 package com.mango.task.ui.screens.profile
 
+
 sealed class ProfileEvent {
-    data object ShowSaveSuccess : ProfileEvent()
-    data object ShowError : ProfileEvent()
+    data object NavigateToLogin : ProfileEvent()
+    data class ShowMessage(val message: String) : ProfileEvent()
 }

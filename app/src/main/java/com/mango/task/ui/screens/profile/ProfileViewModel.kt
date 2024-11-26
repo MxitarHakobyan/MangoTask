@@ -4,12 +4,17 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mango.task.data.base.Resources
+import com.mango.task.data.localStorage.prefs.SecureStorage
+import com.mango.task.data.localStorage.prefs.SharedPrefs
 import com.mango.task.data.model.request.Avatar
 import com.mango.task.data.model.request.ProfileUpdateRequest
 import com.mango.task.data.repository.ProfileRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,7 +22,9 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
-    private val savedStateHandle: SavedStateHandle
+    private val sharedPrefs: SharedPrefs,
+    private val secureStorage: SecureStorage,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     companion object {
@@ -26,6 +33,9 @@ class ProfileViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(ProfileState())
     val state: StateFlow<ProfileState> = _state
+
+    private val _viewEvent = MutableSharedFlow<ProfileEvent>()
+    val viewEvent: SharedFlow<ProfileEvent> = _viewEvent.asSharedFlow()
 
     init {
         fetchProfileData(forceUpdate = true)
@@ -75,10 +85,14 @@ class ProfileViewModel @Inject constructor(
                                         it.copy(isEditing = false)
                                     }
                                 } else {
+                                    _viewEvent.emit(
+                                        ProfileEvent.ShowMessage(
+                                            message = "Saving failed"
+                                        )
+                                    )
                                     updateState {
                                         it.copy(
                                             isLoading = false,
-                                            errorMessage = "Saving failed",
                                             isEditing = false,
                                         )
                                     }
@@ -88,23 +102,32 @@ class ProfileViewModel @Inject constructor(
                             is Resources.Error -> {
                                 // I think api should allow update request without avatar data because user not every time wanna to change avatar
                                 if (result.message?.contains("filename: field required") == true ||
-                                    result.message?.contains("base_64: field required") == true ) {
+                                    result.message?.contains("base_64: field required") == true
+                                ) {
                                     updateState {
                                         it.copy(isEditing = false)
                                     }
                                     savedStateHandle[KEY_IS_LOADING] = false
                                     return@collect
                                 }
-                                updateState {
-                                    it.copy(
-                                        isLoading = false,
-                                        errorMessage = result.message ?: "Unknown error"
+                                updateState { it.copy(isLoading = false) }
+                                _viewEvent.emit(
+                                    ProfileEvent.ShowMessage(
+                                        message = result.message ?: "Unknown error"
                                     )
-                                }
+                                )
                                 savedStateHandle[KEY_IS_LOADING] = false
                             }
                         }
                     }
+                }
+            }
+
+            ProfileIntent.Logout -> {
+                viewModelScope.launch {
+                    sharedPrefs.clear()
+                    clearSecureStorage()
+                    _viewEvent.emit(ProfileEvent.NavigateToLogin)
                 }
             }
         }
@@ -127,16 +150,33 @@ class ProfileViewModel @Inject constructor(
                         }
 
                         is Resources.Error -> {
-                            updateState {
-                                it.copy(
-                                    isLoading = false,
-                                    errorMessage = result.message ?: "Unknown error"
+                            updateState { it.copy(isLoading = false) }
+                            _viewEvent.emit(
+                                ProfileEvent.ShowMessage(
+                                    message = result.message ?: "Unknown error"
                                 )
-                            }
+                            )
                             savedStateHandle[KEY_IS_LOADING] = false
                         }
                     }
                 }
+        }
+    }
+
+    private fun clearSecureStorage() {
+        viewModelScope.launch {
+            updateState { it.copy(isLoading = true) }
+            try {
+                secureStorage.clearStorage()
+            } catch (e: Exception) {
+                _viewEvent.emit(
+                    ProfileEvent.ShowMessage(
+                        message = "Failed to clear storage: ${e.message}"
+                    )
+                )
+            } finally {
+                updateState { it.copy(isLoading = false) }
+            }
         }
     }
 

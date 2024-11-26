@@ -62,12 +62,12 @@ fun ProfileHeader(
         }
     }
 
-    val scale = 1f - (scrollState.value / 350f)
+    val scale = 1f - (scrollState.value / 300f)
 
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.primary)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {

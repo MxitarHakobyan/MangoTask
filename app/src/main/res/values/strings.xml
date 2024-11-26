@@ -44,6 +44,7 @@
     <string name="zodiac_sign_label">Zodiac Sign</string>
     <string name="phone_label">Phone</string>
     <string name="save_button">Save</string>
+    <string name="logout_button">Logout</string>
     <string name="empty_data">…</string>
     <string name="profile_details">Details</string>
 

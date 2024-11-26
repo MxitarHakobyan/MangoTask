@@ -12,5 +12,4 @@ data class ProfileState(
     val phoneNumber: String = "",
     val isEditing: Boolean = false,
     val isLoading: Boolean = false,
-    val errorMessage: String = "",
 )

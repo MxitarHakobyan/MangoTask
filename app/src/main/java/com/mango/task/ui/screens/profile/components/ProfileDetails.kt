@@ -12,9 +12,12 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,6 +29,7 @@ import com.mango.task.ui.screens.profile.ProfileState
 fun ProfileDetails(
     modifier: Modifier = Modifier,
     state: ProfileState,
+    onLogoutClicked: () -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -75,6 +79,24 @@ fun ProfileDetails(
             value = state.phoneNumber,
             icon = Icons.Default.Phone
         )
+
+        Button(
+            modifier = Modifier
+                .padding(top = 24.dp, start = 32.dp, end = 32.dp)
+                .align(Alignment.CenterHorizontally),
+            colors = ButtonColors(
+                containerColor = MaterialTheme.colorScheme.error,
+                contentColor = MaterialTheme.colorScheme.onError,
+                disabledContainerColor = MaterialTheme.colorScheme.onError,
+                disabledContentColor = MaterialTheme.colorScheme.onError
+            ),
+            onClick = { onLogoutClicked() },
+        ) {
+            Text(
+                stringResource(id = R.string.logout_button),
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
     }
 }
 
@@ -90,8 +112,9 @@ fun ProfileDetailsPreview() {
                 zodiacSign = "Capricorn",
                 biography = "A passionate software developer.",
                 city = "New York",
-                phoneNumber = "+1 234 567 8900"
-            )
+                phoneNumber = "+1 234 567 8900",
+            ),
+            onLogoutClicked = {},
         )
     }
 }

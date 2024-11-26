@@ -57,6 +57,9 @@ class ChatListViewModel @Inject constructor() : ViewModel() {
                 unreadCount = 2
             ),
             Chat(id = 2, userName = "Bob", lastMessage = "See you soon!", time = "09:45 AM"),
+            Chat(id = 2, userName = "Bob", lastMessage = "See you soon!", time = "09:45 AM"),
+            Chat(id = 2, userName = "Bob", lastMessage = "See you soon!", time = "09:45 AM"),
+            Chat(id = 2, userName = "Bob", lastMessage = "See you soon!", time = "09:45 AM"),
             Chat(id = 2, userName = "Alan", lastMessage = "Hey!", time = "09:46 AM"),
             Chat(
                 id = 3,

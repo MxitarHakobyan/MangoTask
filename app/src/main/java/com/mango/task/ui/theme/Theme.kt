@@ -6,14 +6,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.mango.task.ui.theme.DarkBackground
 import com.mango.task.ui.theme.DarkError
+import com.mango.task.ui.theme.DarkOnTertiary
 import com.mango.task.ui.theme.DarkPrimary
 import com.mango.task.ui.theme.DarkSecondary
 import com.mango.task.ui.theme.DarkSurface
+import com.mango.task.ui.theme.DarkTertiary
 import com.mango.task.ui.theme.LightBackground
 import com.mango.task.ui.theme.LightError
+import com.mango.task.ui.theme.LightOnTertiary
 import com.mango.task.ui.theme.LightPrimary
 import com.mango.task.ui.theme.LightSecondary
 import com.mango.task.ui.theme.LightSurface
+import com.mango.task.ui.theme.LightTertiary
 import com.mango.task.ui.theme.typography
 
 private val LightColorPalette = lightColorScheme(
@@ -21,6 +25,8 @@ private val LightColorPalette = lightColorScheme(
     secondary = LightSecondary,
     background = LightBackground,
     surface = LightSurface,
+    tertiary = LightTertiary,
+    onTertiary = LightOnTertiary,
     error = LightError,
     onPrimary = Color.White,
     onSecondary = Color.Black,
@@ -34,6 +40,8 @@ private val DarkColorPalette = darkColorScheme(
     secondary = DarkSecondary,
     background = DarkBackground,
     surface = DarkSurface,
+    tertiary = DarkTertiary,
+    onTertiary = DarkOnTertiary,
     error = DarkError,
     onPrimary = Color.Black,
     onSecondary = Color.Black,

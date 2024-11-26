@@ -34,7 +34,6 @@ fun ChatListScreen(
         }
     ) { paddingValues ->
         SwipeRefresh(
-            modifier = Modifier.padding(top = 12.dp),
             state = rememberSwipeRefreshState(isRefreshing = state.isLoading),
             indicator = { state, refreshTrigger ->
                 SwipeRefreshIndicator(

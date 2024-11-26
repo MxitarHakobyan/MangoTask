@@ -121,6 +121,33 @@ fun getDummyChats(): List<Chat> {
                     timestamp = "2 days ago"
                 )
             )
+        ),
+        Chat(
+            id = "7",
+            userName = "Arno",
+            lastMessage = "",
+            time = "",
+            messages = mutableListOf()
+        ),
+        Chat(
+            id = "8",
+            userName = "Emp",
+            lastMessage = "Alright!",
+            time = "2 days ago",
+            messages = mutableListOf(
+                ChatMessage(
+                    id = "1",
+                    content = "Alright!",
+                    isSentByUser = false,
+                    timestamp = "2 days ago"
+                ),
+                ChatMessage(
+                    id = "2",
+                    content = "Thanks a lot!",
+                    isSentByUser = true,
+                    timestamp = "2 days ago"
+                )
+            )
         )
     )
 }

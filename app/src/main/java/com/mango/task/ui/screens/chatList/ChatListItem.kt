@@ -18,8 +18,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.mango.task.R
 
 @Composable
 fun ChatListItem(
@@ -65,14 +67,16 @@ fun ChatListItem(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = chat.lastMessage,
+                    text = chat.lastMessage.ifEmpty {
+                        stringResource(R.string.chats_list_no_message_text)
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = 1
                 )
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = chat.time,
+                    text = chat.time.ifEmpty { stringResource(R.string.empty_data) },
                     style = MaterialTheme.typography.bodySmall
                 )
                 if (chat.unreadCount > 0) {

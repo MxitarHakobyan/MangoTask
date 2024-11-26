@@ -2,6 +2,7 @@
     <string name="app_name">MangoTask</string>
     <string name="bottom_nav_profile_title">Profile</string>
     <string name="bottom_nav_chat_list_title">Messaging</string>
+    <string name="empty_data">…</string>
 
     <!--> Enter phone number screen <!-->
     <string name="enter_your_phone_number_message">Enter your phone number</string>
@@ -44,11 +45,14 @@
     <string name="phone_label">Phone</string>
     <string name="save_button">Save</string>
     <string name="logout_button">Logout</string>
-    <string name="empty_data">…</string>
     <string name="profile_details">Details</string>
 
     <!--> Chats list screen <!-->
+    <string name="chats_list_no_message_text">No message</string>
     <string name="chats_list_page_title">Chats</string>
+
+    <!--> Chat list screen <!-->
+    <string name="chat_list_no_messages_text">No messages</string>
     <string name="chat_input_hint">Type a message…</string>
     <string name="chat_send_message">Send message</string>
 

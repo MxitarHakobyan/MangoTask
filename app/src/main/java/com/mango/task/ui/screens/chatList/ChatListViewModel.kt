@@ -42,7 +42,9 @@ class ChatListViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch {
             delay(1000)
             val refreshedChats = getDummyChats().map {
-                it.copy(lastMessage = "${it.lastMessage} (updated)")
+                if (it.lastMessage.isNotEmpty()) {
+                    it.copy(lastMessage = "${it.lastMessage} (updated)")
+                } else it
             }
             _state.value = _state.value.copy(chats = refreshedChats, isLoading = false)
         }

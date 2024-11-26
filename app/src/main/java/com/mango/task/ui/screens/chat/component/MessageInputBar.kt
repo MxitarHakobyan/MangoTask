@@ -39,6 +39,7 @@ fun MessageInputBar(onSendMessage: (String) -> Unit) {
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
             ),
+            minLines = 2,
             trailingIcon = {
                 IconButton(onClick = {
                     if (messageText.isNotBlank()) {

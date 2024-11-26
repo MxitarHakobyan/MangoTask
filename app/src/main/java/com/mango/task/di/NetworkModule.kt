@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import com.mango.task.BuildConfig.BASE_URL
 import com.mango.task.data.localStorage.prefs.SecureStorage
 import com.mango.task.data.localStorage.prefs.SharedPrefs
-import com.mango.task.data.network.RefreshTokenService
 import com.mango.task.data.network.TokenAuthenticator
 import com.mango.task.data.network.UsersService
 import dagger.Module
@@ -20,11 +19,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-
-    @Provides
-    @Singleton
-    fun provideRefreshTokenService(retrofit: Retrofit): RefreshTokenService =
-        retrofit.create(RefreshTokenService::class.java)
 
     @Provides
     @Singleton

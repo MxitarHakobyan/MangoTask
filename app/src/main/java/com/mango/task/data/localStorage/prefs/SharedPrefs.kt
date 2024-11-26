@@ -21,8 +21,6 @@ class SharedPrefs @Inject constructor(context: Context) {
         sharedPreferences.edit().putLong(KEY_USER_ID, userId).apply()
     }
 
-    fun getUserId() = sharedPreferences.getLong(KEY_USER_ID, -1L)
-
     fun setLoggedIn(isLoggedIn: Boolean) {
         sharedPreferences.edit().putBoolean(KEY_IS_LOGGED_IN, isLoggedIn).apply()
     }

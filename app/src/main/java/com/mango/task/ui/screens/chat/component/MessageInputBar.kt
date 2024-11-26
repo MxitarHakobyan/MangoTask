@@ -18,6 +18,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import com.mango.task.R
 
 @Composable
 fun MessageInputBar(onSendMessage: (String) -> Unit) {
@@ -31,7 +33,7 @@ fun MessageInputBar(onSendMessage: (String) -> Unit) {
         TextField(
             value = messageText,
             onValueChange = { messageText = it },
-            placeholder = { Text("Type a message...") },
+            placeholder = { Text(stringResource(R.string.chat_input_hint)) },
             modifier = Modifier.weight(1f),
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color.Transparent,
@@ -46,7 +48,7 @@ fun MessageInputBar(onSendMessage: (String) -> Unit) {
                 }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.Send,
-                        contentDescription = "Send Message",
+                        contentDescription = stringResource(R.string.chat_send_message),
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }

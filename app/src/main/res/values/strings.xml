@@ -35,7 +35,6 @@
     <string name="edit_profile_button_text">"Edit Profile"</string>
     <string name="close_editing_button_text">Close Edit Mode</string>
     <string name="user_avatar_text">Avatar</string>
-    <string name="full_name_avatar_text">Avatar</string>
     <string name="full_name_label">Full Name</string>
     <string name="username_label">Username</string>
     <string name="dob_label">Date of Birth</string>
@@ -47,5 +46,10 @@
     <string name="logout_button">Logout</string>
     <string name="empty_data">…</string>
     <string name="profile_details">Details</string>
+
+    <!--> Chats list screen <!-->
+    <string name="chats_list_page_title">Chats</string>
+    <string name="chat_input_hint">Type a message…</string>
+    <string name="chat_send_message">Send message</string>
 
 </resources>

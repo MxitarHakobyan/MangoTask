@@ -93,7 +93,6 @@ dependencies {
 
     implementation(libs.datastorePreferences)
     implementation(libs.datastorePreferencesCore)
-    implementation(libs.securityCrypto)
 
     implementation(libs.hiltAndroid)
     ksp(libs.hiltCompiler)

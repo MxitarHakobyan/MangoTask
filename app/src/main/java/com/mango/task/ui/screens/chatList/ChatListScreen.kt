@@ -9,16 +9,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.mango.task.R
 import com.mango.task.ui.navigation.BottomNavItems
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,7 +35,14 @@ fun ChatListScreen(
 
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
-        topBar = { TopAppBar(title = {}) }
+        topBar = {
+            TopAppBar(title = {
+                Text(
+                    text = stringResource(R.string.chats_list_page_title),
+                    fontWeight = FontWeight.Bold
+                )
+            })
+        }
     ) { paddingValues ->
         SwipeRefresh(
             state = rememberSwipeRefreshState(isRefreshing = state.isLoading),

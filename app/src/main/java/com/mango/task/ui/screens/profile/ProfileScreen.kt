@@ -2,10 +2,8 @@ package com.mango.task.ui.screens.profile
 
 import android.annotation.SuppressLint
 import android.widget.Toast
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -15,7 +13,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -31,7 +28,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -41,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.mango.task.R
 import com.mango.task.ui.navigation.AppNavItems
@@ -58,7 +55,7 @@ fun ProfileScreen(
     var base64: String? by remember { mutableStateOf(null) }
     val context = LocalContext.current
 
-    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = false)
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = state.isLoading)
     val scrollState = rememberScrollState()
 
     LaunchedEffect(Unit) {
@@ -114,54 +111,51 @@ fun ProfileScreen(
             }
         }
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(scrollState)
+        SwipeRefresh(
+            modifier = Modifier.padding(paddingValues),
+            indicator = { state, refreshTrigger ->
+                SwipeRefreshIndicator(
+                    state = state,
+                    refreshTriggerDistance = refreshTrigger,
+                    scale = true,
+                    backgroundColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onSecondary,
+                )
+            },
+            state = swipeRefreshState,
+            swipeEnabled = !state.isEditing,
+            onRefresh = {
+                viewModel.handleIntent(ProfileIntent.RefreshProfile)
+            },
         ) {
-            ProfileHeader(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .offset(y = (-scrollState.value / 8).dp),
-                state = state,
-                scrollState = scrollState,
-            ) { base64 = it }
-            SwipeRefresh(
-                state = swipeRefreshState,
-                swipeEnabled = !state.isEditing,
-                onRefresh = {
-                    viewModel.handleIntent(ProfileIntent.RefreshProfile)
-                },
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
             ) {
+                ProfileHeader(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .offset(y = (-scrollState.value / 8).dp),
+                    state = state,
+                    scrollState = scrollState,
+                ) { base64 = it }
+
                 Column(modifier = Modifier.fillMaxSize()) {
-                    if (state.isLoading) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .defaultMinSize(minHeight = 300.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
-                    } else {
-                        ProfileContent(
-                            state = state,
-                            onSave = { updatedState ->
-                                viewModel.handleIntent(
-                                    ProfileIntent.UpdateProfile(
-                                        fullName = updatedState.fullName,
-                                        dateOfBirth = updatedState.dateOfBirth,
-                                        biography = updatedState.biography,
-                                        city = updatedState.city,
-                                        base64 = base64,
-                                    )
+                    ProfileContent(
+                        state = state,
+                        onSave = { updatedState ->
+                            viewModel.handleIntent(
+                                ProfileIntent.UpdateProfile(
+                                    fullName = updatedState.fullName,
+                                    dateOfBirth = updatedState.dateOfBirth,
+                                    biography = updatedState.biography,
+                                    city = updatedState.city,
+                                    base64 = base64,
                                 )
-                            }
-                        ) {
-                            viewModel.handleIntent(ProfileIntent.Logout)
+                            )
                         }
-                    }
+                    ) { viewModel.handleIntent(ProfileIntent.Logout) }
                 }
             }
         }

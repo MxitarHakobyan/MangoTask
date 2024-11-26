@@ -65,8 +65,8 @@ class ProfileViewModel @Inject constructor(
                                 birthday = dateOfBirth.ifEmpty { null },
                                 city = city,
                                 status = biography,
-                                avatar = Avatar(
-                                    filename = if (base64 == null) null else "avatar",
+                                avatar = if (base64.isNullOrEmpty()) null else Avatar(
+                                    filename = "avatar",
                                     base64 = base64
                                 )
                             )
@@ -100,23 +100,13 @@ class ProfileViewModel @Inject constructor(
                             }
 
                             is Resources.Error -> {
-                                // I think api should allow update request without avatar data because user not every time wanna to change avatar
-                                if (result.message?.contains("filename: field required") == true ||
-                                    result.message?.contains("base_64: field required") == true
-                                ) {
-                                    updateState {
-                                        it.copy(isEditing = false)
-                                    }
-                                    savedStateHandle[KEY_IS_LOADING] = false
-                                    return@collect
-                                }
-                                updateState { it.copy(isLoading = false) }
+                                updateState { it.copy(isEditing = false, isLoading = false) }
+                                savedStateHandle[KEY_IS_LOADING] = false
                                 _viewEvent.emit(
                                     ProfileEvent.ShowMessage(
                                         message = result.message ?: "Unknown error"
                                     )
                                 )
-                                savedStateHandle[KEY_IS_LOADING] = false
                             }
                         }
                     }

@@ -81,15 +81,15 @@ class ProfileRepositoryImpl @Inject constructor(
                         if (currentProfile != null) {
                             profileDao.updateProfile(
                                 currentProfile.copy(
-                                    avatarUrl = body.avatars?.avatar ?: "",
-                                    miniAvatarUrl = body.avatars?.miniAvatar ?: "",
-                                    bigAvatarUrl = body.avatars?.bigAvatar ?: "",
+                                    avatarUrl = body.avatars?.avatar ?: currentProfile.avatarUrl,
+                                    miniAvatarUrl = body.avatars?.miniAvatar ?: currentProfile.miniAvatarUrl,
+                                    bigAvatarUrl = body.avatars?.bigAvatar ?: currentProfile.bigAvatarUrl,
                                     name = profileUpdateRequest.name,
                                     username = profileUpdateRequest.username,
                                     birthday = profileUpdateRequest.birthday ?: "",
                                     status = profileUpdateRequest.status,
                                     city = profileUpdateRequest.city,
-                                    avatar = body.avatars?.avatar ?: "",
+                                    avatar = body.avatars?.avatar ?: currentProfile.avatar,
                                 )
                             )
                         }

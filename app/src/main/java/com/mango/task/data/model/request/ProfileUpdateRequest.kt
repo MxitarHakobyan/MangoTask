@@ -14,7 +14,7 @@ data class ProfileUpdateRequest(
     @SerializedName("status")
     val status: String,
     @SerializedName("avatar")
-    val avatar: Avatar,
+    val avatar: Avatar?,
 )
 
 data class Avatar(

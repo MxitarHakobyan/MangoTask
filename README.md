@@ -1,5 +1,8 @@
 # **Kotlin Compose MVI Clean Architecture Test Application**  
 
+
+🚀 **[Download the APK from the Release Assets](https://github.com/MxitarHakobyan/MangoTask/releases/tag/1.0.0)** to test the app right away!
+
 This is a modern test application showcasing the power of **Jetpack Compose** and **Clean Architecture** with the **MVI (Model-View-Intent)** pattern. The app features a seamless user experience, elegant UI, and robust security practices.
 
 ---
@@ -13,7 +16,7 @@ This is a modern test application showcasing the power of **Jetpack Compose** an
   View and manage user details with a beautifully crafted interface.
 
 - **Chat**  
-  Real-time chat interface with smooth transitions and responsive design.
+  Chat interface with dummy data and responsive design.
 
 ---
 

@@ -8,13 +8,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.mango.task.ui.screens.chat.ChatScreen
-import com.mango.task.ui.screens.components.BottomNavigationBar
 import com.mango.task.ui.screens.chatList.ChatListScreen
+import com.mango.task.ui.screens.components.BottomNavigationBar
 import com.mango.task.ui.screens.profile.ProfileScreen
+
+const val CHAT_ID_KEY = "chatId"
 
 @Composable
 fun BottomNavGraph(
@@ -40,7 +44,10 @@ fun BottomNavGraph(
             },
         ) {
             composable(BottomNavItems.ChatList.route) { ChatListScreen(nestedNavController) }
-            composable(BottomNavItems.Chat.route) { ChatScreen(nestedNavController) }
+            composable(
+                route = "${BottomNavItems.Chat.route}/{${CHAT_ID_KEY}}",
+                arguments = listOf(navArgument(CHAT_ID_KEY) { type = NavType.StringType })
+            ) { ChatScreen(nestedNavController) }
             composable(BottomNavItems.Profile.route) { ProfileScreen(navController) }
         }
     }

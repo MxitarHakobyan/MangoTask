@@ -55,7 +55,7 @@ fun ChatListScreen(
             ) {
                 items(state.chats.size) { index ->
                     ChatListItem(chat = state.chats[index]) {
-                        nestedNavController.navigate(BottomNavItems.Chat.route)
+                        nestedNavController.navigate("${BottomNavItems.Chat.route}/${it.id}")
                     }
                 }
             }

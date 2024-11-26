@@ -1,7 +1,10 @@
 package com.mango.task.ui.screens.chat
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mango.task.ui.navigation.CHAT_ID_KEY
+import com.mango.task.ui.screens.dummies.getDummyChats
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,15 +13,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ChatViewModel @Inject constructor() : ViewModel() {
+class ChatViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
+) : ViewModel() {
     private val _state = MutableStateFlow(ChatState())
     val state: StateFlow<ChatState> = _state
-
-    private val dummyMessages = mutableListOf(
-        ChatMessage("1", "Hello! How are you?", isSentByUser = false, "10:00 AM"),
-        ChatMessage("2", "I'm good, thank you! How about you?", isSentByUser = true, "10:01 AM"),
-        ChatMessage("3", "Doing great! Thanks for asking.", isSentByUser = false, "10:02 AM")
-    )
 
     init {
         loadMessages()
@@ -28,8 +27,11 @@ class ChatViewModel @Inject constructor() : ViewModel() {
         _state.value = _state.value.copy(isLoading = true)
         viewModelScope.launch {
             delay(1000)
+            val id = checkNotNull(savedStateHandle[CHAT_ID_KEY] ?: "")
+            val currentChat = getDummyChats().first { it.id == id }
             _state.value = _state.value.copy(
-                messages = dummyMessages,
+                messages = currentChat.messages,
+                chatName = currentChat.userName,
                 isLoading = false
             )
         }
@@ -49,7 +51,8 @@ class ChatViewModel @Inject constructor() : ViewModel() {
             isSentByUser = true,
             timestamp = "10:${(10..59).random()} AM"
         )
-        dummyMessages.add(newMessage)
-        _state.value = _state.value.copy(messages = dummyMessages)
+        val currentMessages = _state.value.messages.toMutableList()
+        currentMessages.add(newMessage)
+        _state.value = _state.value.copy(messages = currentMessages)
     }
 }

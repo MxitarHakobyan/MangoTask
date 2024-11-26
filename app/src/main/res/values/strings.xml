@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">MangoTask</string>
     <string name="bottom_nav_profile_title">Profile</string>
-    <string name="bottom_nav_home_title">Home</string>
+    <string name="bottom_nav_chat_list_title">Messaging</string>
 
     <!--> Enter phone number screen <!-->
     <string name="enter_your_phone_number_message">Enter your phone number</string>

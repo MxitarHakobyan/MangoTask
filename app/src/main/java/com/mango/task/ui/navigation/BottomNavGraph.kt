@@ -12,7 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.mango.task.ui.screens.components.BottomNavigationBar
-import com.mango.task.ui.screens.home.HomeScreen
+import com.mango.task.ui.screens.chatList.ChatListScreen
 import com.mango.task.ui.screens.profile.ProfileScreen
 
 @Composable
@@ -25,7 +25,7 @@ fun BottomNavGraph(
     ) { paddingValues ->
         NavHost(
             navController = nestedNavController,
-            startDestination = BottomNavItems.Home.route,
+            startDestination = BottomNavItems.Chatlist.route,
             modifier = Modifier.padding(paddingValues),
             enterTransition = {
                 slideIntoContainer(
@@ -38,8 +38,8 @@ fun BottomNavGraph(
                 )
             },
         ) {
-            composable(BottomNavItems.Home.route) {
-                HomeScreen()
+            composable(BottomNavItems.Chatlist.route) {
+                ChatListScreen()
             }
             composable(BottomNavItems.Profile.route) { ProfileScreen(navController) }
         }

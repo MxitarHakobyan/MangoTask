@@ -22,7 +22,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ChatListItem(chat: Chat) {
+fun ChatListItem(
+    chat: Chat,
+    onChatClicked: (Chat) -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
@@ -30,6 +33,9 @@ fun ChatListItem(chat: Chat) {
             contentColor = MaterialTheme.colorScheme.onTertiary,
             containerColor = MaterialTheme.colorScheme.tertiary
         ),
+        onClick = {
+            onChatClicked(chat)
+        },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(

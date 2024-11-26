@@ -9,29 +9,29 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.mango.task.ui.navigation.BottomNavItems
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatListScreen(
+    nestedNavController: NavController,
     viewModel: ChatListViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.collectAsState().value
 
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
-        topBar = {
-            TopAppBar(title = { Text("Chats") })
-        }
+        topBar = { TopAppBar(title = {}) }
     ) { paddingValues ->
         SwipeRefresh(
             state = rememberSwipeRefreshState(isRefreshing = state.isLoading),
@@ -54,7 +54,9 @@ fun ChatListScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(state.chats.size) { index ->
-                    ChatListItem(chat = state.chats[index])
+                    ChatListItem(chat = state.chats[index]) {
+                        nestedNavController.navigate(BottomNavItems.Chat.route)
+                    }
                 }
             }
         }

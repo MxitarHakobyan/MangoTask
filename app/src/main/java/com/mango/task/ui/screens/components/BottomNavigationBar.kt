@@ -13,7 +13,7 @@ import com.mango.task.ui.navigation.BottomNavItems
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     val items = listOf(
-        BottomNavItems.Chatlist,
+        BottomNavItems.ChatList,
         BottomNavItems.Profile
     )
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route

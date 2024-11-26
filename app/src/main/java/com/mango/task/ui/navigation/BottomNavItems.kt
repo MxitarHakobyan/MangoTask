@@ -7,8 +7,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.mango.task.R
 
 sealed class BottomNavItems(val route: String, val title: Int, val icon: ImageVector) {
-    data object Chatlist : BottomNavItems(
+    data object ChatList : BottomNavItems(
         route = "chatList",
+        title = R.string.bottom_nav_chat_list_title,
+        icon = Icons.Default.MailOutline
+    )
+
+    data object Chat : BottomNavItems(
+        route = "chat",
         title = R.string.bottom_nav_chat_list_title,
         icon = Icons.Default.MailOutline
     )

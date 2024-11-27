@@ -89,7 +89,7 @@ fun ProfileScreen(
                         IconButton(onClick = { viewModel.handleIntent(ProfileIntent.ExitEditMode) }) {
                             Icon(
                                 imageVector = Icons.Filled.Close,
-                                tint = Color.White,
+                                tint = MaterialTheme.colorScheme.onBackground,
                                 contentDescription = stringResource(R.string.close_editing_button_text)
                             )
                         }

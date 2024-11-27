@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -90,6 +91,7 @@ fun ProfileHeader(
                 .clickable(state.isEditing) {
                     if (state.isEditing) galleryLauncher.launch("image/*")
                 },
+            contentScale = ContentScale.Crop,
             painter = painter,
             contentDescription = stringResource(R.string.user_avatar_text),
         )
